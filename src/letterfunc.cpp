@@ -244,7 +244,7 @@ int strCaseCmp(const wchar_t *s, const char *p)
     wcharfolded S(s);
     charfolded P(p);
     int iS,iP;
-    //while(true)
+    
     for(;;)
         {
         iS = S.C();

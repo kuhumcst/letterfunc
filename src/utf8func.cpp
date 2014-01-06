@@ -647,7 +647,7 @@ int strCaseCmpN(const char *s, const char *p,ptrdiff_t & is,ptrdiff_t & ip)
     mcharfolded S(s);
     mcharfolded P(p);
     int iS,iP;
-    //while(true)
+    
     const char * pS;
     const char * pP;
     int ret = 0;
@@ -700,7 +700,7 @@ int strCmpN(const char *s, const char *p,ptrdiff_t & is,ptrdiff_t & ip)
     mcharfolded S(s);
     mcharfolded P(p);
     int iS,iP;
-    //while(true)
+    
     const char * pS;
     const char * pP;
     int ret = 0;
@@ -753,7 +753,7 @@ int strCaseCmp(const char *s, const char *p)
     mcharfolded S(s);
     mcharfolded P(p);
     int iS,iP;
-    //while(true)
+    
     for(;;)
         {
         iS = S.C();
