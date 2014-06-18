@@ -25,7 +25,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #define ARRSIZE 6173
 
 /*
-Based on CaseFolding-6.1.0.txt
+Based on CaseFolding-7.0.0.txt
 
 Structures created with CaseFolding.bra
 */
@@ -33,7 +33,7 @@ struct tri{unsigned int w[3];};
 struct quat{unsigned int Unfolded;unsigned int Simple;unsigned int Capital;struct tri * Full;};
 extern struct quat Letter[ARRSIZE];
 /*
-Based on UnicodeData.txt (08-Nov-2011 15:45)
+Based on UnicodeData.txt (10-03-2014 18:20:00)
 (Does not convert final sigma to non-final sigma)
 
 Structures created with uni.bra

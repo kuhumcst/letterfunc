@@ -88,7 +88,7 @@ bool isAlpha(int a)
                 }
             }
         }
-    return false;
+    return false;// unreachable code
     }
 #endif
 
