@@ -73,7 +73,7 @@ bool isAlpha(int a)
             if((unsigned int)a < Cletters[i].L)
                 {
                 start_i = --i;
-                return (unsigned int)a <= Cletters[i].L+Cletters[i].range;
+                return (unsigned int)(a) <= (unsigned int)(Cletters[i].L + Cletters[i].range);
                 }
             }
         }
@@ -84,7 +84,7 @@ bool isAlpha(int a)
             if((unsigned int)a < Cletters[i].L)
                 {
                 start_i = --i;
-                return (unsigned int)a <= Cletters[i].L+Cletters[i].range;
+                return (unsigned int)(a) <= (unsigned int)(Cletters[i].L + Cletters[i].range);
                 }
             }
         }
