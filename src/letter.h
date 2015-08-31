@@ -1,9 +1,9 @@
 /*
-LETTERFUNC - Unicode functions: I/O, string comparison, change casing
+LETTERFUNC - Unicode support
 
 Copyright (C) 2012  Center for Sprogteknologi, University of Copenhagen
 
-This file is part of CST's Language Technology Tools.
+This file is part of LETTERFUNC.
 
 LETTERFUNC is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -22,10 +22,10 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #ifndef LETTER_H
 #define LETTER_H
 
-#define ARRSIZE 6173
+#define ARRSIZE 9511
 
 /*
-Based on CaseFolding-7.0.0.txt
+Based on CaseFolding-8.0.0.txt
 
 Structures created with CaseFolding.bra
 */
@@ -33,7 +33,7 @@ struct tri{unsigned int w[3];};
 struct quat{unsigned int Unfolded;unsigned int Simple;unsigned int Capital;struct tri * Full;};
 extern struct quat Letter[ARRSIZE];
 /*
-Based on UnicodeData.txt (10-03-2014 18:20:00)
+Based on UnicodeData.txt (09-Feb-2015 20:08)
 (Does not convert final sigma to non-final sigma)
 
 Structures created with uni.bra

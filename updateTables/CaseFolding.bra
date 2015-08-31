@@ -3,8 +3,8 @@
 Read CaseFolding-7.0.0.txt and convert to Full and Simple tables in C}
 
 X=
-  (CaseFoldingFileName="CaseFolding-7.0.0.txt")
-  (UnicodeDataDate="10-03-2014 18:20:00")
+  (CaseFoldingFileName="CaseFolding-8.0.0.txt")
+  (UnicodeDataDate="09-Feb-2015 20:08")
   (TurkicN=)
   (SimpleN=)
   (FullN=)
@@ -858,7 +858,7 @@ r=
 &   put
   $ ( "{CaseFolding.bra
 
-Read CaseFolding-7.0.0.txt and convert to Full and Simple tables in C}
+Read CaseFolding.txt and convert to Full and Simple tables in C}
 
 "
     , "CaseFolding.bra"
