@@ -1,10 +1,19 @@
 {CaseFolding.bra
 
-Read CaseFolding-7.0.0.txt and convert to Full and Simple tables in C}
+Read CaseFolding-9.0.0.txt and convert to Full and Simple tables in C.
+
+You need to install Bracmat to run this script:
+
+    git clone https://github.com/BartJongejan/Bracmat.git
+    
+After installing, start bracmat and then, after the prompt, type:
+
+    get$"Casefolding.bra"
+}
 
 X=
-  (CaseFoldingFileName="CaseFolding-8.0.0.txt")
-  (UnicodeDataDate="09-Feb-2015 20:08")
+  (CaseFoldingFileName="CaseFolding-9.0.0.txt")
+  (UnicodeDataDate="16-May-2016 19:23")
   (TurkicN=)
   (SimpleN=)
   (FullN=)
@@ -197,7 +206,7 @@ X=
           &   whl
             ' ( !all:(?n.?)+?all
               & mod$(!n,!min):?adr
-              & ( (rij..find)$!adr&~`
+              & ( (rij..find)$!adr&`~
                 | (rij..insert)$(!adr.!n)
                 )
               )
@@ -271,7 +280,7 @@ Based on UnicodeData.txt ("
                 ")
 (Does not convert final sigma to non-final sigma)
 
-Structures created with uni.bra
+Structures created with CaseFolding.bra
 */
 struct ccaseconv {unsigned int L:21;int range:11;unsigned int inc:2;int dif:20;};
 extern struct ccaseconv l2u[];
@@ -619,7 +628,7 @@ struct tri Full["
             :   (?d:?D&-1+!D:?D.?)
                 ?
                 (   (!D&-1+!D:?D.?) ?
-                  & ~`
+                  & `~
                 | ?let
                 )
           & 1+!D:?D
@@ -749,7 +758,7 @@ struct ccaseconv "
                             . ?
                             )
                             ?
-                        & ~`
+                        & `~
                       |   ?arg
                         &     (   !dd:
                                 & ( !d
@@ -856,11 +865,24 @@ r=
 & rmv$"CaseFolding.bak"
 & ren$("CaseFolding.bra"."CaseFolding.bak")
 &   put
-  $ ( "{CaseFolding.bra
+  $ (   str
+      $ ( "{CaseFolding.bra
 
-Read CaseFolding.txt and convert to Full and Simple tables in C}
+Read "
+          !(X.CaseFoldingFileName)
+          " and convert to Full and Simple tables in C.
+
+You need to install Bracmat to run this script:
+
+    git clone https://github.com/BartJongejan/Bracmat.git
+    
+After installing, start bracmat and then, after the prompt, type:
+
+    get$\"Casefolding.bra\"
+}
 
 "
+        )
     , "CaseFolding.bra"
     , NEW
     )
