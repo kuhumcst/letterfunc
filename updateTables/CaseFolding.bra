@@ -1,6 +1,6 @@
 {CaseFolding.bra
 
-Read CaseFolding-9.0.0.txt and convert to Full and Simple tables in C.
+Read CaseFolding-10.0.0.txt and convert to Full and Simple tables in C.
 
 You need to install Bracmat to run this script:
 
@@ -12,8 +12,8 @@ After installing, start bracmat and then, after the prompt, type:
 }
 
 X=
-  (CaseFoldingFileName="CaseFolding-9.0.0.txt")
-  (UnicodeDataDate="16-May-2016 19:23")
+  (CaseFoldingFileName="CaseFolding-10.0.0.txt")
+  (UnicodeDataDate="2017-04-14, 05:40:18 GMT")
   (TurkicN=)
   (SimpleN=)
   (FullN=)
@@ -872,6 +872,23 @@ Read "
           !(X.CaseFoldingFileName)
           " and convert to Full and Simple tables in C.
 
+Produces 
+    letter.h
+    letter.cpp
+    
+and also
+    CaseFolding.html,
+    LOW
+    COMB
+    K
+    let
+    l2u
+    l2us
+    u2l
+    u2ls
+    cletters.cpp
+    letters
+    
 You need to install Bracmat to run this script:
 
     git clone https://github.com/BartJongejan/Bracmat.git
