@@ -2162,33 +2162,55 @@ static int compareEntities(const void * a, const void * b)
 
 char * findEntity(char * entityString)
     {
-    static char tmp[16];
+    static char tmp[22];
     Entity * pItem;
     Entity key;
-    key.ent = entityString;
-    pItem = (Entity*)bsearch( &key
-                            , entities
-                            , sizeof(entities) / sizeof(entities[0])
-                            , sizeof(entities[0])
-                            , compareEntities
-                            );
-    if (pItem != NULL)
+    if (entityString)
         {
-        int writtenlength = UnicodeToUtf8(pItem->code, tmp, sizeof(tmp));
-        if (writtenlength >= 0)
+        int writtenlength;
+        if (entityString[0] == '#')
             {
-            tmp[writtenlength] = '\0';
-            if (pItem->morecode)
+            unsigned long N;
+            char * endp;
+            N = (entityString[1] == 'x') ? strtoul(entityString + 2, &endp, 16) : strtoul(entityString + 1, &endp, 10);
+            if (!*endp)
                 {
-                writtenlength = UnicodeToUtf8(pItem->morecode, tmp + writtenlength, sizeof(tmp) - writtenlength);
-                if (writtenlength)
+                writtenlength = UnicodeToUtf8(N, tmp, sizeof(tmp));
+                if (writtenlength >= 0)
                     {
                     tmp[writtenlength] = '\0';
                     return tmp;
                     }
                 }
-            else
-                return tmp;
+            }
+        else
+            {
+            key.ent = entityString;
+            pItem = (Entity*)bsearch(&key
+                                     , entities
+                                     , sizeof(entities) / sizeof(entities[0])
+                                     , sizeof(entities[0])
+                                     , compareEntities
+                                     );
+            if (pItem != NULL)
+                {
+                writtenlength = UnicodeToUtf8(pItem->code, tmp, sizeof(tmp));
+                if (writtenlength >= 0)
+                    {
+                    tmp[writtenlength] = '\0';
+                    if (pItem->morecode)
+                        {
+                        writtenlength = UnicodeToUtf8(pItem->morecode, tmp + writtenlength, sizeof(tmp) - writtenlength);
+                        if (writtenlength)
+                            {
+                            tmp[writtenlength] = '\0';
+                            return tmp;
+                            }
+                        }
+                    else
+                        return tmp;
+                    }
+                }
             }
         }
     return 0;
