@@ -28,7 +28,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 bool isAllUpper(const char * s,size_t len);
 bool isUpperUTF8(const char * s);
 //int UnicodeToUtf8(int w,char * s,int len);
-int UnicodeToUtf8(int w,char * s,size_t len);
+int UnicodeToUtf8(unsigned int w,char * s,size_t len);
 int Utf8ToUnicode(int * w,const char * s,size_t len);
 //void AllToUpper(char * s);
 const char * allToLowerUTF8(const char * s);
@@ -70,7 +70,7 @@ int copyUTF8char(const char * source,char * dest);
     // Makes no check of validity of UTF8!
 size_t skipUTF8char(const char * s);
     // Makes no check of validity of UTF8!
-extern bool UTF8;
+extern bool globUTF8;
 #endif
 
 #endif

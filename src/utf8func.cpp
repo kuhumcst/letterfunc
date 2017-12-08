@@ -26,7 +26,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #if UNICODE_CAPABLE
 #include "letter.h"
 
-bool UTF8 = true; /* can be set to false by calls to 
+bool globUTF8 = true; /* can be set to false by calls to 
                   isUpperUTF8, 
                   AllToUpper, 
                   allToLowerUTF8, 
@@ -37,21 +37,21 @@ bool UTF8 = true; /* can be set to false by calls to
 
 bool isUpperUTF8(const char * s)
     {
-    int S = UTF8char(s,UTF8);
-    if(!UTF8)
+    int S = UTF8char(s,globUTF8);
+    if(!globUTF8)
         return false;
     return upperEquivalent(S) == (unsigned int)S;
     }
 
 bool isAllUpper(const char * s,size_t len)
     {
-    bool UTF8 = true;
+    bool UTF_8 = true;
     int S;
     if(len > 0)
         {
-        while((S = getUTF8char(s,UTF8)) != 0 && len-- > 0)
+        while((S = getUTF8char(s, UTF_8)) != 0 && len-- > 0)
             {
-            if(!UTF8)
+            if(!UTF_8)
                 return false;
             if(upperEquivalent(S) != (unsigned int)S)
                 return false;
@@ -59,9 +59,9 @@ bool isAllUpper(const char * s,size_t len)
         }
     else
         {
-        while((S = getUTF8char(s,UTF8)) != 0)
+        while((S = getUTF8char(s, UTF_8)) != 0)
             {
-            if(!UTF8)
+            if(!UTF_8)
                 return false;
             if(upperEquivalent(S) != (unsigned int)S)
                 return false;
@@ -70,8 +70,8 @@ bool isAllUpper(const char * s,size_t len)
     return true;
     }
 
-int UnicodeToUtf8(int w,char * s,size_t len)
-// Converts Unicode character w to 1,2,3 or 4 bytes of UTF8 in s.
+int UnicodeToUtf8(unsigned int w,char * s,size_t len)
+// Converts Unicode character w to 1,2,3 or 4 bytes of UTF-8 in s.
 // Returns number of bytes written.
     {
     // Convert unicode to utf8
@@ -175,10 +175,10 @@ const char * changeCase(const char * s,bool low,size_t & length)
             if(!isutf)
                 {
                 strcpy(d,s);
-                length = d + strlen(d) - obuf;
+                length = (size_t)((d + strlen(d)) - obuf);
                 return obuf;
                 }
-            int D = low ? lowerEquivalent(S) : upperEquivalent(S);
+            unsigned int D = low ? lowerEquivalent(S) : upperEquivalent(S);
             if(d >= dwarn)
                 {
                 int nb = utf8bytes(D);
@@ -188,7 +188,7 @@ const char * changeCase(const char * s,bool low,size_t & length)
                     len *= 2;
                     char * buf = new char[len];
                     dwarn = buf + len - 7;
-                    memcpy(buf,obuf,d - obuf);
+                    memcpy(buf,obuf,(size_t)(d - obuf));
                     d = buf + (d - obuf);
                     delete [] obuf;
                     obuf = buf;
@@ -197,7 +197,7 @@ const char * changeCase(const char * s,bool low,size_t & length)
             d += UnicodeToUtf8(D,d,len - (d-obuf));
             }
         *d = 0;
-        length = d - obuf;
+        length = (size_t)(d - obuf);
         return obuf;
         }
     length = 0;
@@ -221,9 +221,9 @@ void AllToUpper(char * s)
     char * dest = start;
     const char * cs = s;
     int S;
-    while((S = getUTF8char(cs,UTF8)) != 0)
+    while((S = getUTF8char(cs,globUTF8)) != 0)
         {
-        if(!UTF8)
+        if(!globUTF8)
             {
             delete [] start;
             return;
@@ -272,9 +272,9 @@ Some will become shorter:
     char * dest = ret;
     const char * cs = s;
     int S;
-    while((S = getUTF8char(cs,UTF8)) != 0)
+    while((S = getUTF8char(cs,globUTF8)) != 0)
         {
-        if(!UTF8)
+        if(!globUTF8)
             {
             strcpy(ret,s);
             return ret;
@@ -316,9 +316,9 @@ Some will become shorter:
     char * dest = ret;
     const char * cs = s;
     int S = 0;
-    while(cs < stop && (S = getUTF8char(cs,UTF8)) != 0)
+    while(cs < stop && (S = getUTF8char(cs,globUTF8)) != 0)
         {
-        if(!UTF8)
+        if(!globUTF8)
             {
             delete [] ret;
             return;
@@ -359,9 +359,9 @@ Some will become shorter:
     char * dest = ret;
     const char * cs = s;
     int S;
-    while((S = getUTF8char(cs,UTF8)) != 0)
+    while((S = getUTF8char(cs,globUTF8)) != 0)
         {
-        if(!UTF8)
+        if(!globUTF8)
             {
             delete [] ret;
             return;
@@ -380,8 +380,8 @@ Some will become shorter:
 
 
 
-int getUTF8char(const char *& s,bool & UTF8) 
-/* Returns *s if s isn't UTF8 and increments s with 1.
+int getUTF8char(const char *& s,bool & UTF_8) 
+/* Returns *s if s isn't UTF-8 and increments s with 1.
    Otherwise returns character and shifts s to start of next character.
    Returns 0 if end of string reached. In that case, s becomes invalid
    (pointing past the zero).
@@ -399,7 +399,7 @@ int getUTF8char(const char *& s,bool & UTF8)
             if((k[0] & 0xfe) == 0xfe)
                 {
                 s = (const char *)save + 1;
-                UTF8 = false;
+                UTF_8 = false;
                 return *save;
                 }
             // Start of multibyte
@@ -411,7 +411,7 @@ int getUTF8char(const char *& s,bool & UTF8)
                 if((k[i] & 0xc0) != 0x80) // 10bbbbbb
                     {
                     s = (const char *)save + 1;
-                    UTF8 = false;
+                    UTF_8 = false;
                     return *save;
                     }
                 }
@@ -425,7 +425,7 @@ int getUTF8char(const char *& s,bool & UTF8)
             if(K <= 0x7f)
                 {
                 s = (const char *)save + 1;
-                UTF8 = false;
+                UTF_8 = false;
                 return *save; // overlong UTF-8 sequence
                 }
             return K;
@@ -440,7 +440,7 @@ int getUTF8char(const char *& s,bool & UTF8)
 
 
 int copyUTF8char(const char * s,char * dest)
-// Makes no check of validity of UTF8!
+// Makes no check of validity of UTF-8!
     {
     *dest = *s;
     if((*s & 0xc0) == 0xc0) // 11bbbbbb
@@ -459,12 +459,12 @@ int copyUTF8char(const char * s,char * dest)
     }
 
 size_t skipUTF8char(const char * s)
-// Makes no check of validity of UTF8!
+// Makes no check of validity of UTF-8!
     {
-    if(UTF8 && (*s & 0xc0) == 0xc0) // 11bbbbbb
+    if(globUTF8 && (*s & 0xc0) == 0xc0) // 11bbbbbb
         {
         // Start of multibyte
-        int i = 1;
+        size_t i = 1;
         while((*++s & 0xc0) == 0x80) // 10bbbbbb
             {
             ++i;
@@ -481,7 +481,7 @@ int Utf8ToUnicode(int * w,const char * s,size_t len)
     int i = 0;
     int S;
     const char * end = s + len;
-    while((S = getUTF8char(s,UTF8)) != 0 && s <= end)
+    while((S = getUTF8char(s,globUTF8)) != 0 && s <= end)
         {
         *w++ = S;
         ++i;
@@ -491,14 +491,14 @@ int Utf8ToUnicode(int * w,const char * s,size_t len)
     }
 
 
-int UTF8char(const char * s,bool & UTF8) 
-/* Returns *s if s isn't UTF8.
-   Otherwise returns UTF8 character.
+int UTF8char(const char * s,bool & UTF_8) 
+/* Returns *s if s isn't UTF-8.
+   Otherwise returns UTF-8 character.
    Returns 0 if end of string reached.
    Does not increment s;
 */
     {
-    if(!UTF8)
+    if(!UTF_8)
         return *s;
 
     const unsigned char * save = (const unsigned char *)s;
@@ -512,7 +512,7 @@ int UTF8char(const char * s,bool & UTF8)
             int i = 1;
             if((k[0] & 0xfe) == 0xfe)
                 {
-                UTF8 = false;
+                UTF_8 = false;
                 return *save;
                 }
             // Start of multibyte
@@ -523,7 +523,7 @@ int UTF8char(const char * s,bool & UTF8)
                 
                 if((k[i] & 0xc0) != 0x80) // 10bbbbbb
                     {
-                    UTF8 = false;
+                    UTF_8 = false;
                     return *save;
                     }
                 }
@@ -536,7 +536,7 @@ int UTF8char(const char * s,bool & UTF8)
                 }
             if(K <= 0x7f)
                 {
-                UTF8 = false;
+                UTF_8 = false;
                 return *save; // overlong UTF-8 sequence
                 }
             return K;
@@ -544,7 +544,7 @@ int UTF8char(const char * s,bool & UTF8)
         else
             {
             if(k[0] > 0x7f)
-                UTF8 = false; /*20120906*/
+                UTF_8 = false; /*20120906*/
             return k[0];
             }
         }
@@ -612,7 +612,7 @@ const char * Inc(const char *& s)
     }
 #endif
 
-class mcharfolded:public folded // UTF8
+class mcharfolded:public folded // UTF-8
     {
     private:
         const char * s;
@@ -641,7 +641,7 @@ class mcharfolded:public folded // UTF8
 
 int strCaseCmpN(const char *s, const char *p,ptrdiff_t & is,ptrdiff_t & ip)
     {
-    /* Assumes that s and p are UTF8. However, if they aren't, 
+    /* Assumes that s and p are UTF-8. However, if they aren't, 
        the algorithm assumes that s and p are one byte per character.
     */
     mcharfolded S(s);
@@ -694,7 +694,7 @@ int strCaseCmpN(const char *s, const char *p,ptrdiff_t & is,ptrdiff_t & ip)
 
 int strCmpN(const char *s, const char *p,ptrdiff_t & is,ptrdiff_t & ip)
     {
-    /* Assumes that s and p are UTF8. However, if they aren't, 
+    /* Assumes that s and p are UTF-8. However, if they aren't, 
        the algorithm assumes that s and p are one byte per character.
     */
     mcharfolded S(s);
@@ -747,7 +747,7 @@ int strCmpN(const char *s, const char *p,ptrdiff_t & is,ptrdiff_t & ip)
 
 int strCaseCmp(const char *s, const char *p)
     {
-    /* Assumes that s and p are UTF8. However, if they aren't, 
+    /* Assumes that s and p are UTF-8. However, if they aren't, 
        the algorithm assumes that s and p are one byte per character.
     */
     mcharfolded S(s);

@@ -1,0 +1,5 @@
+2017.12.8
+-------------------------
+Renamed the global boolean variable UTF8 to globUTF8.
+Made some explicit type casts between int and size_t and changed some int
+declarations to unsigned int declarations.
