@@ -556,11 +556,11 @@ int UTF8char(const char * s,bool & UTF_8)
 const char * Inc(const char *& s)
     /* essentially -(s - ++s)
        but:
-            UTF8 sequences count as one character
+            UTF-8 sequences count as one character
             if *s is zero, s is not incremented
     */
     {
-    if(!UTF8)
+    if(!globUTF8)
         return 1;
 //        return s++;
 

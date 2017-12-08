@@ -67,9 +67,9 @@ int getUTF8char(const char *& s,bool & UTF8);
 int copyUTF8char(const char * source,char * dest);
     // Copies one character from source to destination.
     // Returns number of bytes copied. (max 6)
-    // Makes no check of validity of UTF8!
+    // Makes no check of validity of UTF-8!
 size_t skipUTF8char(const char * s);
-    // Makes no check of validity of UTF8!
+    // Makes no check of validity of UTF-8!
 extern bool globUTF8;
 #endif
 
