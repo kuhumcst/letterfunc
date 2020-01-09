@@ -30,7 +30,7 @@ bool isUpperUTF8(const char * s);
 //int UnicodeToUtf8(int w,char * s,int len);
 int UnicodeToUtf8(unsigned int w,char * s,size_t len);
 int Utf8ToUnicode(int * w,const char * s,size_t len);
-//void AllToUpper(char * s);
+void AllToUpper(char * s);
 const char * allToLowerUTF8(const char * s);
 // Simple case folding, used for simple "case insensitive" comparison.
 // Allocates enough memory to hold the returned value.
@@ -52,6 +52,15 @@ const char * changeCase(const char * s,bool low,size_t & length);
 // only converted for the first 'length' bytes; the remaining bytes are
 // skipped.
 
+const char * adaptCase(const char * ll, const char * rr, size_t & length);
+// Adapt the casing of ll to the casing of rr, starting from the first
+// character in ll and rr, continuing for as long as the current character in
+// ll is equal to the current character of rr, when converted to the same case.
+// The returned value must be copied to its destination before the next call
+// to adaptCase. 'length' is the number of bytes before the final '\0' in the
+// returned value. On entry, if length is set to a positive number, case is
+// only converted for the first 'length' bytes; the remaining bytes are
+// skipped.
 int strCaseCmp(const char *s, const char *p);
 int strCaseCmpN(const char *s, const char *p,ptrdiff_t & is,ptrdiff_t & ip);
 //Like strCaseCmp. Returns indices into s and p where s and/or p ended or where they became dissimilar.

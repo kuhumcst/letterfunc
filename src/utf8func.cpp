@@ -43,6 +43,33 @@ bool isUpperUTF8(const char * s)
     return upperEquivalent(S) == (unsigned int)S;
     }
 
+bool isAllLower(const char * s, size_t len)
+    {
+    bool UTF_8 = true;
+    int S;
+    if (len > 0)
+        {
+        while ((S = getUTF8char(s, UTF_8)) != 0 && len-- > 0)
+            {
+            if (!UTF_8)
+                return false;
+            if (lowerEquivalent(S) != (unsigned int)S)
+                return false;
+            }
+        }
+    else
+        {
+        while ((S = getUTF8char(s, UTF_8)) != 0)
+            {
+            if (!UTF_8)
+                return false;
+            if (lowerEquivalent(S) != (unsigned int)S)
+                return false;
+            }
+        }
+    return true;
+    }
+
 bool isAllUpper(const char * s,size_t len)
     {
     bool UTF_8 = true;
@@ -202,6 +229,133 @@ const char * changeCase(const char * s,bool low,size_t & length)
         }
     length = 0;
     return s;
+    }
+
+
+const char * adaptCase(const char * ll, const char * rr, size_t & length)
+// Adapt the casing of ll to the casing of rr, starting from the first
+// character in ll and rr, continuing for as long as the current character in
+// ll is equal to the current character of rr, when converted to the same case.
+// The returned value must be copied to its destination before the next call
+// to adaptCase. 'length' is the number of bytes before the final '\0' in the
+// returned value. On entry, if length is set to a positive number, case is
+// only converted for the first 'length' bytes; the remaining bytes are
+// skipped.
+    {
+    static char * obuf = NULL;
+    if (isAllLower(rr, 0))
+        {
+        if (isAllLower(ll, 0))
+            return ll;
+        else
+            {
+            return allToLowerUTF8(ll);
+            }
+        }
+    else if (isAllUpper(rr, 0))
+        {
+        if (isAllUpper(ll, 0))
+            return ll;
+        else if(!strchr(rr, '\''))
+            {
+            size_t len = strlen(ll);
+            delete[] obuf;
+            obuf = new char[len + 1];
+            strcpy(obuf, ll);
+            AllToUpper(obuf);
+            return obuf;
+            }
+        }
+
+    size_t llen;
+    size_t rlen;
+    llen = strlen(ll);
+    rlen = strlen(rr);
+    if (llen > 0)
+        {
+        llen += sizeof(int);
+        llen /= sizeof(int);
+        llen *= sizeof(int); // string fits within integer boundaries.
+        if (obuf)
+            delete[] obuf;
+        obuf = new char[llen];
+        char * dwarn;
+        char * d = obuf;
+        const char * sstop = ((length == 0 || length > llen) ? ll + llen : ll + length);
+        dwarn = obuf + llen - 7;
+        bool lisutf = true;
+        bool risutf = true;
+        for (; ll < sstop && *ll && *rr;)
+            {
+            int L = getUTF8char(ll, lisutf);
+            int R = getUTF8char(rr, risutf);
+            if (!lisutf)
+                {
+                strcpy(d, ll);
+                length = (size_t)((d + strlen(d)) - obuf);
+                return obuf;
+                }
+            unsigned int Llow = lowerEquivalent(L);
+            unsigned int Rlow = lowerEquivalent(R);
+            if (d >= dwarn)
+                {
+                int nb = utf8bytes(Llow);
+                if (d + nb >= dwarn + 7)
+                    {
+                    /* overrun */
+                    llen *= 2;
+                    char * buf = new char[llen];
+                    dwarn = buf + llen - 7;
+                    memcpy(buf, obuf, (size_t)(d - obuf));
+                    d = buf + (d - obuf);
+                    delete[] obuf;
+                    obuf = buf;
+                    }
+                }
+            if (Llow == Rlow)
+                {
+                // Copy R, not L to output.
+                d += UnicodeToUtf8(R, d, llen - (d - obuf));
+                }
+            else
+                {
+                d += UnicodeToUtf8(L, d, llen - (d - obuf));
+                break; // Stop attempt to adapt casing of ll to rr. Characters are different. 
+                }
+            }
+        // Check whether there are still characters in ll. Copy them to output.
+        for (; ll < sstop && *ll;)
+            {
+            int L = getUTF8char(ll, lisutf);
+            if (!lisutf)
+                {
+                strcpy(d, ll);
+                length = (size_t)((d + strlen(d)) - obuf);
+                return obuf;
+                }
+            if (d >= dwarn)
+                {
+                int nb = utf8bytes(L);
+                if (d + nb >= dwarn + 7)
+                    {
+                    /* overrun */
+                    llen *= 2;
+                    char * buf = new char[llen];
+                    dwarn = buf + llen - 7;
+                    memcpy(buf, obuf, (size_t)(d - obuf));
+                    d = buf + (d - obuf);
+                    delete[] obuf;
+                    obuf = buf;
+                    }
+                }
+            d += UnicodeToUtf8(L, d, llen - (d - obuf));
+            }
+        *d = 0;
+        length = (size_t)(d - obuf);
+        return obuf;
+        }
+    length = 0;
+    return ll;
     }
 
 

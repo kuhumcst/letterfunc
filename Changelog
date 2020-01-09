@@ -1,3 +1,9 @@
+2020.1.9
+------------------------
+Added functions isAllLower and adaptCase.
+The latter adapts the case of the first argument to that of th second one,
+until the first and second arguments differ, when compared case insensitively.
+
 2017.12.8
 -------------------------
 Renamed the global boolean variable UTF8 to globUTF8.
