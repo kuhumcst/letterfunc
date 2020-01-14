@@ -1,3 +1,8 @@
+2020.1.14
+------------------------
+New fundtion CapitalizeAndLowercase that capitalizes first character and
+lowercases the rest.
+
 2020.1.9
 ------------------------
 Added functions isAllLower and adaptCase.

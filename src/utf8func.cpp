@@ -172,6 +172,57 @@ static int utf8bytes(unsigned long val)
         }
     }
 
+const char* CapitalizeAndLowercase(const char* s)
+    {
+    size_t len;
+    len = strlen(s);
+    if(len > 0)
+        {
+        static char* obuf = NULL;
+        len += sizeof(int);
+        len /= sizeof(int);
+        len *= sizeof(int); // string fits within integer boundaries.
+        if(obuf)
+            delete[] obuf;
+        obuf = new char[len];
+        char* dwarn;
+        char* d = obuf;
+        const char* sstop = s + len;
+        dwarn = obuf + len - 7;
+        bool isutf = true;
+        bool low = false;
+        for(; s < sstop && *s;)
+            {
+            int S = getUTF8char(s, isutf);
+            if(!isutf)
+                {
+                strcpy(d, s);
+                return obuf;
+                }
+            unsigned int D = low ? lowerEquivalent(S) : upperEquivalent(S);
+            if(d >= dwarn)
+                {
+                int nb = utf8bytes(D);
+                if(d + nb >= dwarn + 7)
+                    {
+                    /* overrun */
+                    len *= 2;
+                    char* buf = new char[len];
+                    dwarn = buf + len - 7;
+                    memcpy(buf, obuf, (size_t)(d - obuf));
+                    d = buf + (d - obuf);
+                    delete[] obuf;
+                    obuf = buf;
+                    }
+                }
+            d += UnicodeToUtf8(D, d, len - (d - obuf));
+            low = true;
+            }
+        *d = 0;
+        return obuf;
+        }
+    return s;
+    }
 
 const char * changeCase(const char * s,bool low,size_t & length)
 // The returned value must be copied to its destination before the next call

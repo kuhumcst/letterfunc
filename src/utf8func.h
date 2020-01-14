@@ -52,6 +52,11 @@ const char * changeCase(const char * s,bool low,size_t & length);
 // only converted for the first 'length' bytes; the remaining bytes are
 // skipped.
 
+const char* CapitalizeAndLowercase(const char* s);
+// Capitalizes first character and lowercases the rest.
+// The returned value must be copied to its destination before the next call
+// to CapitalizeAndLowercase. 
+
 const char * adaptCase(const char * ll, const char * rr, size_t & length);
 // Adapt the casing of ll to the casing of rr, starting from the first
 // character in ll and rr, continuing for as long as the current character in
