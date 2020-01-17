@@ -22,10 +22,10 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #ifndef LETTER_H
 #define LETTER_H
 
-#define ARRSIZE 12235
+#define ARRSIZE 12311
 
 /*
-Based on CaseFolding-10.0.0.txt
+Based on CaseFolding-12.1.0.txt
 
 Structures created with CaseFolding.bra
 */
@@ -33,7 +33,7 @@ struct tri{unsigned int w[3];};
 struct quat{unsigned int Unfolded;unsigned int Simple;unsigned int Capital;struct tri * Full;};
 extern struct quat Letter[ARRSIZE];
 /*
-Based on UnicodeData.txt (2017-04-14, 05:40:18 GMT)
+Based on UnicodeData.txt (2019-03-10, 10:53:00 GMT)
 (Does not convert final sigma to non-final sigma)
 
 Structures created with CaseFolding.bra
