@@ -319,9 +319,7 @@ const char * adaptCase(const char * ll, const char * rr, size_t & length)
         }
 
     size_t llen;
-    size_t rlen;
     llen = strlen(ll);
-    rlen = strlen(rr);
     if (llen > 0)
         {
         llen += sizeof(int);
