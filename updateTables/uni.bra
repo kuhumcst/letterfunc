@@ -3,7 +3,7 @@
 Reads UnicodeData.txt from current working directory.
 http://unicode.org/Public/UNIDATA/UnicodeData.txt
 
-Writes arrays to the file u2l-l2u.cpp.
+Writes arrays to the file u2l-l2u.c
 Put these arrays in the right place in Bracmat.c to support 
 the latest lower to upper and upper to lower conventions.
 }
@@ -240,12 +240,30 @@ struct cletter Cletters[]={"
         )
       &   put
         $ (   str
-            $ ( "/* Based on http://unicode.org/Public/UNIDATA/UnicodeData.txt "
+            $ ( "#ifndef U2L_L2U_H
+#define U2L_L2U_H
+/* Based on http://unicode.org/Public/UNIDATA/UnicodeData.txt "
                 !(X.UnicodeDataDate)
                 " */
 /* Structures created with uni.bra */
-                  
-struct ccaseconv {unsigned int L:21;int range:11;unsigned int inc:2;int dif:20;};"
+
+struct ccaseconv {unsigned int L:21;int range:11;unsigned int inc:2;int dif:20;};
+extern struct ccaseconv u2l[];
+extern struct ccaseconv l2u[];
+#endif
+"
+              )
+          , "u2l-l2u.h"
+          , NEW BIN
+          )
+      &   put
+        $ (   str
+            $ ( "#include \"u2l-l2u.h\"
+/* Based on http://unicode.org/Public/UNIDATA/UnicodeData.txt "
+                !(X.UnicodeDataDate)
+                " */
+/* Structures created with uni.bra */
+"
               )
           , "u2l-l2u.c"
           , NEW BIN
