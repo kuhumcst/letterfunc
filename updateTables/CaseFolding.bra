@@ -1,6 +1,6 @@
 {CaseFolding.bra
 
-Read CaseFolding-12.1.0.txt and convert to Full and Simple tables in C.
+Read CaseFolding-14.0.0.txt and convert to Full and Simple tables in C.
 
 Produces 
     letter.h
@@ -29,8 +29,8 @@ After installing, start bracmat and then, after the prompt, type:
 }
 
 X=
-  (CaseFoldingFileName="CaseFolding-12.1.0.txt")
-  (UnicodeDataDate="2019-03-10, 10:53:00 GMT")
+  (CaseFoldingFileName="CaseFolding-14.0.0.txt")
+  (UnicodeDataDate="2021-07-06 12:31")
   (TurkicN=)
   (SimpleN=)
   (FullN=)
@@ -124,7 +124,8 @@ X=
         )
       & ( writeList
         =   unfolded folded comm
-          .   put$(str$("<h1>" !arg "</h1>\n"),"CaseFolding.html",APP)
+          .     put
+              $ (str$("<h1>" !arg "</h1>\n"),"CaseFolding.html",APP BIN)
             & !(its.!arg):?arg
             &     str
                 $ ( "<table>"
@@ -152,12 +153,12 @@ X=
                     "</table>"
                   )
               : ?L
-            & put$(!L,"CaseFolding.html",APP)
+            & put$(!L,"CaseFolding.html",APP BIN)
         )
       & put$("<html><body>
-","CaseFolding.html",NEW)
+","CaseFolding.html",NEW BIN)
       & writeList$COMB
-      & put$("</body></html>","CaseFolding.html",APP)
+      & put$("</body></html>","CaseFolding.html",APP BIN)
   )
   ( UpperLower
   =   upper lower
@@ -310,7 +311,7 @@ extern struct cletter Cletters[];
 "
               )
           , "letter.h"
-          , NEW
+          , NEW BIN
           )
       &   put
         $ (   str
@@ -345,7 +346,7 @@ struct tri Full["
                 "]={\n"
               )
           , "letter.cpp"
-          , NEW
+          , NEW BIN
           )
       & !fulls:?all
       & ", ":?sep
@@ -367,7 +368,7 @@ struct tri Full["
             $ (   str
                 $ ("{{" !w1 "," !w2 "," !w3 "}}" !sep "/*" !Comment "*/" \n)
               , "letter.cpp"
-              , APP
+              , APP BIN
               )
           & !i+1:?i
           )
@@ -378,8 +379,9 @@ struct tri Full["
           & mod$(!Unfolded,!(its.COMBMin)):?adr
           & (!adr.!Unfolded.!rest)+!rij:?rij
           )
-      & put$(str$(\n "struct quat Letter[ARRSIZE]={
-"),"letter.cpp",APP)
+      &   put
+        $ (str$(\n "struct quat Letter[ARRSIZE]={
+"),"letter.cpp",APP BIN)
       & 0:?i
       & -1:?curr
       & ", ":?sep
@@ -414,9 +416,9 @@ struct tri Full["
                         \n
                       )
                   , "letter.cpp"
-                  , APP
+                  , APP BIN
                   )
-            | put$(str$("{0,0,0,0L}" !sep \n),"letter.cpp",APP)
+            | put$(str$("{0,0,0,0L}" !sep \n),"letter.cpp",APP BIN)
             )
           & !i+1:?i
           )
@@ -425,7 +427,7 @@ struct tri Full["
           &   ( !i:!(its.COMBMin)&"};":?sep
               | 
               )
-              put$(str$("{0,0,0,0L}" !sep \n),"letter.cpp",APP)
+              put$(str$("{0,0,0,0L}" !sep \n),"letter.cpp",APP BIN)
           )
   )
   ( combine
@@ -530,9 +532,9 @@ struct tri Full["
             | 
             )
           )
-      & lst$(LOW,LOW,NEW)
+      & lst$(LOW,LOW,NEW BIN)
       & !LOW+!COMB:?COMB
-      & lst$(COMB,COMB,NEW)
+      & lst$(COMB,COMB,NEW BIN)
       & !COMB
   )
   ( do
@@ -632,10 +634,10 @@ struct tri Full["
            | ?txt
            )
          )
-      & (lst$(K,K,NEW)|)
-      & (lst$(let,let,NEW)|)
-      & (lst$(u2l,u2l,NEW)|)
-      & (lst$(l2u,l2u,NEW)|)
+      & (lst$(K,K,NEW BIN)|)
+      & (lst$(let,let,NEW BIN)|)
+      & (lst$(u2l,u2l,NEW BIN)|)
+      & (lst$(l2u,l2u,NEW BIN)|)
       & :?letters
       & :?Cletters
       & 0:?blocks
@@ -672,11 +674,11 @@ struct cletter {int L:21;int range:11;};
 struct cletter Cletters[]={"
               )
           , "cletters.cpp"
-          , NEW
+          , NEW BIN
           )
-      & put$(str$!Cletters,"cletters.cpp",APP)
+      & put$(str$!Cletters,"cletters.cpp",APP BIN)
       & put$("{0x1FFFFF,0}};
-","cletters.cpp",APP)
+","cletters.cpp",APP BIN)
       &   put
         $ ( "
 bool isAlpha(int a)
@@ -711,9 +713,9 @@ bool isAlpha(int a)
     }
 "
           , "cletters.cpp"
-          , APP
+          , APP BIN
           )
-      & lst$(letters,letters,NEW)
+      & lst$(letters,letters,NEW BIN)
       & ( comp
         =   
           .   !arg:(?arg.?name)
@@ -729,8 +731,8 @@ struct ccaseconv "
                       !name
                       "[]={\n"
                     )
-                ,   ("letter.cpp",APP)
-                  | (str$(!name ".cpp"):?name,NEW)
+                ,   ("letter.cpp",APP BIN)
+                  | (str$(!name ".cpp"):?name,NEW BIN)
                 )
             & (pat1=!d1&-1+!d1:?d1)
             & (pat2=!d2&-2+!d2:?d2)
@@ -814,17 +816,21 @@ struct ccaseconv "
                           : ?conv
                       )
                 )
-            & put$(str$!conv,"letter.cpp"|!name,APP)
             &   put
-              $ ("{0x1FFFFF,0,0,0}};
-","letter.cpp"|!name,APP)
+              $ (str$!conv,"letter.cpp"|!name,APP BIN)
+            &   put
+              $ ( "{0x1FFFFF,0,0,0}};
+"
+                , "letter.cpp"|!name
+                , APP BIN
+                )
             & !LL
         )
       & comp$(!l2u.l2u):?l2us
-      & lst$(l2us,l2us,NEW)
+      & lst$(l2us,l2us,NEW BIN)
       & comp$(!u2l.u2l):?u2ls
-      & lst$(u2ls,u2ls,NEW)
-      & whl'(!K:%?k ?K&lst$(!k,!k,NEW))
+      & lst$(u2ls,u2ls,NEW BIN)
+      & whl'(!K:%?k ?K&lst$(!k,!k,NEW BIN))
       &   put
         $ (   str
             $ ( "
@@ -839,11 +845,11 @@ Structures created with CaseFolding.bra
 struct cletter Cletters[]={"
               )
           , "letter.cpp"
-          , APP
+          , APP BIN
           )
-      & put$(str$!Cletters,"letter.cpp",APP)
+      & put$(str$!Cletters,"letter.cpp",APP BIN)
       & put$("{0x1FFFFF,0}};
-","letter.cpp",APP)
+","letter.cpp",APP BIN)
       & 
   )
   ( new
@@ -918,12 +924,12 @@ After installing, start bracmat and then, after the prompt, type:
 "
         )
     , "CaseFolding.bra"
-    , NEW
+    , NEW BIN
     )
-& lst'(X,"CaseFolding.bra",APP)
-& put'(\n,"CaseFolding.bra",APP)
-& lst'(r,"CaseFolding.bra",APP)
-& put$(str$("\nnew'" X "&;\n"),"CaseFolding.bra",APP)
+& lst'(X,"CaseFolding.bra",APP BIN)
+& put'(\n,"CaseFolding.bra",APP BIN)
+& lst'(r,"CaseFolding.bra",APP BIN)
+& put$(str$("\nnew'" X "&;\n"),"CaseFolding.bra",APP BIN)
 & done;
 
 new'X&;
