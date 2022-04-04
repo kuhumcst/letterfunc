@@ -36,10 +36,12 @@ class folded
         bool inFull;
     protected:
         virtual int c() = 0;
+        virtual int cinc() = 0;
     public:
         folded():w(0),i(-1),inFull(false){}
         virtual ~folded(){}
-        int C(); // full case folding of w
+        int Cinc(); // full case folding of w
+        int folded::CincSimple();
     };
 
 
@@ -55,6 +57,8 @@ unsigned int lowerEquivalent(int kar);
 unsigned int upperEquivalent(int kar);
 //bool isAllUpper(const char * s,int len);
 int strCaseCmp(const wchar_t *s, const char *p);
+int strLeftCaseCmp(const wchar_t* s, const char* p);
+int strCmp(const wchar_t* s, const char* p);
 //int strCaseCmp(const char *s, const char *p);
 //int UTF8char(const char * s,bool & UTF8); 
     // Sets UTF8 to false if s isn't UTF8

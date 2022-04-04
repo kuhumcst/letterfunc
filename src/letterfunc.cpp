@@ -175,7 +175,7 @@ unsigned int upperEquivalent(int kar)
 */
     }
 
-int folded::C()
+int folded::Cinc()
     {
     if(inFull)
         {
@@ -184,7 +184,7 @@ int folded::C()
         else
             return w[i++];
         }
-    int kar = c();
+    int kar = cinc();
     int ind = kar % ARRSIZE;
     if((int)Letter[ind].Unfolded == kar)
         {
@@ -203,12 +203,35 @@ int folded::C()
     return kar;
     }
 
+int folded::CincSimple()
+    {
+    if (inFull)
+        {
+        if (i > 2 || w[i] == 0)
+            inFull = false;
+        else
+            return w[i++];
+        }
+    int kar = cinc();
+    int ind = kar % ARRSIZE;
+    if ((int)Letter[ind].Unfolded == kar)
+        {
+        return Letter[ind].Simple;
+        }
+    return kar;
+    }
+
 class charfolded:public folded // ISO
     {
     private:
         const char * s;
     protected:
+    public:
         virtual int c()
+            {
+            return *s;
+            }
+        virtual int cinc()
             {
             return *s++;
             }
@@ -226,7 +249,12 @@ class wcharfolded:public folded // UTF16
     private:
         const wchar_t * s;
     protected:
+    public:
         virtual int c()
+            {
+            return *s;
+            }
+        virtual int cinc()
             {
             return *s++;
             }
@@ -240,6 +268,7 @@ class wcharfolded:public folded // UTF16
     };
 
 int strCaseCmp(const wchar_t *s, const char *p)
+/* s and p: case insensitive */
     {
     wcharfolded S(s);
     charfolded P(p);
@@ -247,8 +276,8 @@ int strCaseCmp(const wchar_t *s, const char *p)
     
     for(;;)
         {
-        iS = S.C();
-        iP = P.C();
+        iS = S.Cinc();
+        iP = P.Cinc();
         if(iS)
             {
             if(iP)
@@ -262,6 +291,68 @@ int strCaseCmp(const wchar_t *s, const char *p)
         else
             {
             if(iP)
+                return -1;
+            else
+                return 0;
+            }
+        }
+    }
+
+int strLeftCaseCmp(const wchar_t* s, const char* p)
+/* s: case insensitive, p: case sensitive */
+    {
+    wcharfolded S(s);
+    charfolded P(p);
+    int iS, iP, IS;
+
+    for (;;)
+        {
+        IS = S.c();
+        iS = S.CincSimple();
+        iP = P.cinc();
+        if (iS)
+            {
+            if (iP)
+                {
+                if (iS != iP && IS != iP)
+                    return iS - iP;
+                }
+            else
+                return 1;
+            }
+        else
+            {
+            if (iP)
+                return -1;
+            else
+                return 0;
+            }
+        }
+    }
+
+int strCmp(const wchar_t* s, const char* p)
+    {
+    wcharfolded S(s);
+    charfolded P(p);
+    int iS, iP;
+
+    for (;;)
+        {
+        iS = S.cinc();
+        iP = P.cinc();
+        if (iS)
+            {
+            if (iP)
+                {
+                if (iS != iP)
+                    return iS - iP;
+                }
+            else
+                return 1;
+            }
+        else
+            {
+            if (iP)
                 return -1;
             else
                 return 0;
