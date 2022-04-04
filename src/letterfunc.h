@@ -41,7 +41,7 @@ class folded
         folded():w(0),i(-1),inFull(false){}
         virtual ~folded(){}
         int Cinc(); // full case folding of w
-        int folded::CincSimple();
+        int CincSimple();
     };
 
 
