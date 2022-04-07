@@ -828,6 +828,14 @@ class mcharfolded:public folded // UTF-8
                 {
                 return getUTF8char(s,UTF8);
                 }
+            return *s;
+            }
+        virtual int cinc()
+            {
+            if (UTF8)
+                {
+                return getUTF8char(s, UTF8);
+                }
             return *s++;
             }
         mcharfolded(const char * s):s(s),UTF8(true)
@@ -858,8 +866,8 @@ int strCaseCmpN(const char *s, const char *p,ptrdiff_t & is,ptrdiff_t & ip)
         {
         pS = S.itsS();
         pP = P.itsS();
-        iS = S.C();
-        iP = P.C();
+        iS = S.Cinc();
+        iP = P.Cinc();
         if(iS)
             {
             if(iP)
@@ -911,8 +919,8 @@ int strCmpN(const char *s, const char *p,ptrdiff_t & is,ptrdiff_t & ip)
         {
         pS = S.itsS();
         pP = P.itsS();
-        iS = S.c();
-        iP = P.c();
+        iS = S.cinc();
+        iP = P.cinc();
         if(iS)
             {
             if(iP)
@@ -959,8 +967,8 @@ int strCaseCmp(const char *s, const char *p)
     
     for(;;)
         {
-        iS = S.C();
-        iP = P.C();
+        iS = S.Cinc();
+        iP = P.Cinc();
         if(iS)
             {
             if(iP)
