@@ -21,6 +21,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 #include "letterfunc.h"
 #include <string.h>
+#include <assert.h>
+
 #if UNICODE_CAPABLE
 #include "letter.h"
 
@@ -58,8 +60,6 @@ NameStartChar       ::=       ":" | [A-Z] | "_" | [a-z] | [#xC0-#xD6]
     //return kar > 255; // Assume Unicode positions outside Latin-1 is all alphabetic
     }
 
-#else
-
 bool isAlpha(int a)
     {
     static int start_i = 0;
@@ -90,8 +90,44 @@ bool isAlpha(int a)
         }
     return false;// unreachable code
     }
-#endif
+#else
+bool isAlpha(int a)
+    {
+    unsigned int pivot;
+    unsigned int lo;
+    unsigned int hi;
+    lo = 0;
+    pivot = 8;
+    hi = lastindex; /* Range starting at lastindex does not consists of letters, so pivot must always stay less than lastindex. */
+    assert(pivot < lastindex);
+    if(a <= 0)
+        return 0;
+    while(1)
+        {
+        assert(pivot < hi);
+        if(a < Cletters[pivot].L)
+            {
+            if(pivot == lo)
+                return 0;
+            else
+                {
+                hi = pivot;
+                pivot = (pivot + lo) / 2;
+                }
+            }
+        else if(a <= Cletters[pivot].L + Cletters[pivot].range)
+            return 1;
+        else if(pivot + 1 == hi)
+            return 0;
+        else
+            {
+            lo = pivot + 1;
+            pivot = (hi + pivot) / 2;
+            }
 
+        }
+    }
+#endif
 
 static int convertLetter(int a,struct ccaseconv * T)
     {

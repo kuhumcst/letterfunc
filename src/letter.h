@@ -25,24 +25,25 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #define ARRSIZE 12311
 
 /*
-Based on CaseFolding-14.0.0.txt
+Based on CaseFolding-15.0.0.txt
 
 Structures created with CaseFolding.bra
 */
-struct tri{unsigned int w[3];};
-struct quat{unsigned int Unfolded;unsigned int Simple;unsigned int Capital;struct tri * Full;};
+struct tri { unsigned int w[3]; };
+struct quat { unsigned int Unfolded; unsigned int Simple; unsigned int Capital; struct tri* Full; };
 extern struct quat Letter[ARRSIZE];
 /*
-Based on UnicodeData.txt (2021-07-06 12:31)
+Based on UnicodeData.txt (2022-08-03 17:00)
 (Does not convert final sigma to non-final sigma)
 
 Structures created with CaseFolding.bra
 */
-struct ccaseconv {unsigned int L:21;int range:11;unsigned int inc:2;int dif:20;};
+struct ccaseconv { unsigned int L : 21; int range : 11; unsigned int inc : 2; int dif : 20; };
 extern struct ccaseconv l2u[];
 extern struct ccaseconv u2l[];
 
-struct cletter {unsigned int L:21;unsigned int range:11;};
+extern unsigned int lastindex;
+struct cletter { unsigned int L : 21; unsigned int range : 11; };
 extern struct cletter Cletters[];
 
 #endif

@@ -9,7 +9,7 @@ the latest lower to upper and upper to lower conventions.
 }
 
 X=
-  (UnicodeDataDate="01-Apr-2019 00:08")
+  (UnicodeDataDate=2022-08-03)
   ( do
   =   
     .   0:?p
@@ -89,13 +89,18 @@ X=
                           : ?l2u
                         )
                       & (   @(!"General Category":L ?k)
-                          &     (x2d$!"Code value".!"Code value".!"Character name")
+                          &     ( x2d$!"Code value"
+                                . !"Code value"
+                                . !"Character name"
+                                )
                                 !let
                             : ?let
                           & ( !K:? !k ?
-                            | !k !K:?K&:?!k
+                            |   !k !K:?K
+                              & :?!k
                             )
-                          & (!"Code value".!"Character name") !!k:?!k
+                          &   (!"Code value".!"Character name") !!k
+                            : ?!k
                           & out$!"Code value"
                         | 
                         )
@@ -115,18 +120,28 @@ X=
       & :?Cletters
       & 0:?blocks
       & \n:?nl
+      & 0:?lastindex
       &   whl
         ' (   !let
             :   (?d:?D&-1+!D:?D.?)
                 ?
-                (   (!D&-1+!D:?D.?) ?
+                (     (!D&-1+!D:?D.?)
+                      ?
                   & `~
                 | ?let
                 )
           & 1+!D:?D
-          & (d2x$!D.!d+-1*!D) !letters:?letters
-          &   !nl "{0x" d2x$!D "," !d+-1*!D "}," !Cletters
+          &   (d2x$!D.!d+-1*!D) !letters
+            : ?letters
+          &     !nl
+                "{0x"
+                d2x$!D
+                ","
+                !d+-1*!D
+                "},"
+                !Cletters
             : ?Cletters
+          & 1+!lastindex:?lastindex
           & (   !blocks:7
               & 0:?blocks
               & \n:?nl
@@ -134,8 +149,14 @@ X=
             )
           )
       &   put
-        $ ( "struct cletter {int L:21;int range:11;};
-struct cletter Cletters[]={"
+        $ (   str
+            $ ( "static struct cletter {int L:21;int range:11;};"
+                \n
+                "static size_t lastindex = "
+                !lastindex
+                ";\n"
+                "static struct cletter Cletters[]={"
+              )
           , "cletters.c"
           , NEW BIN
           )
@@ -190,7 +211,8 @@ struct cletter Cletters[]={"
                       ?
                       (     ( ?ndd
                             . ?
-                            . !df&!ndd:!pat:?dd
+                            .   !df
+                              & !ndd:!pat:?dd
                             . ?
                             )
                             ?
@@ -272,7 +294,10 @@ extern struct ccaseconv l2u[];
       & lst$(u2ls,u2ls,NEW BIN)
       & comp$(!l2u.l2u."u2l-l2u.c"):?l2us
       & lst$(l2us,l2us,NEW BIN)
-      & whl'(!K:%?k ?K&lst$(!k,!k,NEW BIN))
+      &   whl
+        ' ( !K:%?k ?K
+          & lst$(!k,!k,NEW BIN)
+          )
       & ( 
         |   out
           $ ( read
@@ -283,7 +308,9 @@ extern struct ccaseconv l2u[];
       & 
   )
   ( new
-  = .get$("UnicodeData.txt",STR):?txt&(X.do)$
+  =   
+    .   get$("UnicodeData.txt",STR):?txt
+      & (X.do)$
   );
 
 r=

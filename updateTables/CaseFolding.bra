@@ -1,6 +1,6 @@
 {CaseFolding.bra
 
-Read CaseFolding-14.0.0.txt and convert to Full and Simple tables in C.
+Read CaseFolding-15.0.0.txt and convert to Full and Simple tables in C.
 
 Produces 
     letter.h
@@ -29,8 +29,8 @@ After installing, start bracmat and then, after the prompt, type:
 }
 
 X=
-  (CaseFoldingFileName="CaseFolding-14.0.0.txt")
-  (UnicodeDataDate="2021-07-06 12:31")
+  (CaseFoldingFileName="CaseFolding-15.0.0.txt")
+  (UnicodeDataDate="2022-08-03 17:00")
   (TurkicN=)
   (SimpleN=)
   (FullN=)
@@ -41,6 +41,7 @@ X=
   (LowerMin=)
   (COMBN=)
   (COMBMin=)
+  (lastindex=)
   (FullMin=)
   (COMB=)
   (Small2Capital=)
@@ -67,7 +68,8 @@ X=
               ' ( @(!arg:%@?k ?arg)
                 & (   !k:>" "
                     & 16*!nn:?16n
-                    &   16*!nn+(!k:#|!off+asc$!k)
+                    &     16*!nn
+                        + (!k:#|!off+asc$!k)
                       : ?nn
                   | 
                   )
@@ -77,18 +79,22 @@ X=
       &   whl
         ' ( @(!file:%?line \n ?file)
           & ( @(!line:"#" ?)
-            |   @(!line:?hexIn "; " ?type "; " ?hexOut "; #" ?comment)
+            |   @( !line
+                 : ?hexIn "; " ?type "; " ?hexOut "; #" ?comment
+                 )
               & 16210$!hexIn:?decIn
               & :?decOut
               &   whl
                 ' ( @( !hexOut
-                     : %?hex (" " ?hexOut|:?hexOut)
+                     :   %?hex
+                         (" " ?hexOut|:?hexOut)
                      )
                   & !decOut 16210$!hex:?decOut
                   )
               & ( !decout:% %
                 |   @(!comment:? CAPITAL ?)
-                  &   (!decOut.!decIn.!comment)+!(its.Small2Capital)
+                  &     (!decOut.!decIn.!comment)
+                      + !(its.Small2Capital)
                     : ?(its.Small2Capital)
                 | 
                 )
@@ -125,14 +131,18 @@ X=
       & ( writeList
         =   unfolded folded comm
           .     put
-              $ (str$("<h1>" !arg "</h1>\n"),"CaseFolding.html",APP BIN)
+              $ ( str$("<h1>" !arg "</h1>\n")
+                , "CaseFolding.html"
+                , APP BIN
+                )
             & !(its.!arg):?arg
             &     str
                 $ ( "<table>"
                     ( :?L
                     &   whl
                       ' (   !arg
-                          : (?unfolded.?folded.?cap.?comm.?full)+?arg
+                          :   (?unfolded.?folded.?cap.?comm.?full)
+                            + ?arg
                         &     "<tr><td>&#"
                               !unfolded
                               ";</td><td>&#"
@@ -174,7 +184,8 @@ X=
                   & !A+-1*!B:<0
               )
             &   whl
-              ' ( !arg:(?unfolded.%?folded ?.?comm)+?arg
+              ' (   !arg
+                  : (?unfolded.%?folded ?.?comm)+?arg
                 & (   !lower:?A+(!folded.?k)+?Z
                     & (   shorter$(!comm.!k)
                         & !A+(!folded.!comm)+!Z:?lower
@@ -203,14 +214,16 @@ X=
   ( count
   =   n
     .   0:?n
-      & whl'(!arg:%+?arg&1+!n:?n)
+      &   whl
+        ' (!arg:%+?arg&1+!n:?n)
       & !n
   )
   ( 2List
   =   C L
     .   !arg
       |   :?L
-        & whl'(!arg:%?C+?arg&!C !L:?L)
+        &   whl
+          ' (!arg:%?C+?arg&!C !L:?L)
         & !L
   )
   ( store
@@ -228,7 +241,9 @@ X=
                 | (rij..insert)$(!adr.!n)
                 )
               )
-          & (|(rij..forall)$out&get')
+          & ( 
+            | (rij..forall)$out&get'
+            )
           & !all:~0
           & 1+!min:?min
           & put$(str$(\r !min))
@@ -237,13 +252,22 @@ X=
       & (!min.!rij)
   )
   ( writeC
-  =   all n N c rij Nfull Nsimple Nupper Nlower
+  =     all
+        n
+        N
+        c
+        rij
+        Nfull
+        Nsimple
+        Nupper
+        Nlower
     .   !(its.COMBMin):?arg
       & out$writeC
       & !(its.COMB):?all
       & 0:?fulls
       &   whl
-        ' ( !all:(?Unfolded.?Simple.?Capital.?Comment.?Full)+?all
+        ' (   !all
+            : (?Unfolded.?Simple.?Capital.?Comment.?Full)+?all
           & ( !Full:
             |   !fulls:?A+(!Full.?c)+?Z
               & !A+(!Full.!c "*//*" !Comment)+!Z:?fulls
@@ -304,6 +328,7 @@ struct ccaseconv {unsigned int L:21;int range:11;unsigned int inc:2;int dif:20;}
 extern struct ccaseconv l2u[];
 extern struct ccaseconv u2l[];
 
+extern unsigned int lastindex;
 struct cletter {unsigned int L:21;unsigned int range:11;};
 extern struct cletter Cletters[];
 
@@ -355,7 +380,9 @@ struct tri Full["
         ' (   !all
             :   (   %@?w1
                     (   %@?w2
-                        (%@?w3|&0:?w3)
+                        ( %@?w3
+                        | &0:?w3
+                        )
                     | &0:?w2:?w3
                     )
                 . ?Comment
@@ -366,7 +393,19 @@ struct tri Full["
             )
           &   put
             $ (   str
-                $ ("{{" !w1 "," !w2 "," !w3 "}}" !sep "/*" !Comment "*/" \n)
+                $ ( "{{"
+                    !w1
+                    ","
+                    !w2
+                    ","
+                    !w3
+                    "}}"
+                    !sep
+                    "/*"
+                    !Comment
+                    "*/"
+                    \n
+                  )
               , "letter.cpp"
               , APP BIN
               )
@@ -380,18 +419,29 @@ struct tri Full["
           & (!adr.!Unfolded.!rest)+!rij:?rij
           )
       &   put
-        $ (str$(\n "struct quat Letter[ARRSIZE]={
-"),"letter.cpp",APP BIN)
+        $ ( str$(\n "struct quat Letter[ARRSIZE]={
+")
+          , "letter.cpp"
+          , APP BIN
+          )
       & 0:?i
       & -1:?curr
       & ", ":?sep
       &   whl
         ' ( (   !curr:<!i
               &   !rij
-                : (?curr.?Unfolded.?Simple.?Capital.?Comment.?Full)+?rij
+                :   ( ?curr
+                    . ?Unfolded
+                    . ?Simple
+                    . ?Capital
+                    . ?Comment
+                    . ?Full
+                    )
+                  + ?rij
             | !rij:(?.?)+?
             )
-          & ( !i+1:!(its.COMBMin)&"};":?sep
+          & (   !i+1:!(its.COMBMin)
+              & "};":?sep
             | 
             )
           & (   !curr:!i
@@ -418,16 +468,25 @@ struct tri Full["
                   , "letter.cpp"
                   , APP BIN
                   )
-            | put$(str$("{0,0,0,0L}" !sep \n),"letter.cpp",APP BIN)
+            |   put
+              $ ( str$("{0,0,0,0L}" !sep \n)
+                , "letter.cpp"
+                , APP BIN
+                )
             )
           & !i+1:?i
           )
       &   whl
         ' ( !i+1:?i:~>!(its.COMBMin)
-          &   ( !i:!(its.COMBMin)&"};":?sep
+          &   (   !i:!(its.COMBMin)
+                & "};":?sep
               | 
               )
-              put$(str$("{0,0,0,0L}" !sep \n),"letter.cpp",APP BIN)
+                put
+              $ ( str$("{0,0,0,0L}" !sep \n)
+                , "letter.cpp"
+                , APP BIN
+                )
           )
   )
   ( combine
@@ -463,15 +522,19 @@ struct tri Full["
       & !(its.Turkic):?L
       &   whl
         ' ( !L:(?unf.?fol.?com)+?L
-          & (   !COMB:?A+(!unf.?ifol.?icap.?icom.)+?B
+          & (     !COMB
+                : ?A+(!unf.?ifol.?icap.?icom.)+?B
               & ( !icom:!com
-                |   out$(different comments !unf !icom and !com)
+                |     out
+                    $ (different comments !unf !icom and !com)
                   & get'
                 )
-              & !A+(!unf.!ifol.!icap.!com.!fol)+!B:?COMB
+              &   !A+(!unf.!ifol.!icap.!com.!fol)+!B
+                : ?COMB
             |     ( !unf
                   . !fol
-                  .   @(!com:? CAPITAL ?)&!unf
+                  .     @(!com:? CAPITAL ?)
+                      & !unf
                     | 
                   . !com
                   . 
@@ -483,19 +546,23 @@ struct tri Full["
       & !(its.Full):?L
       &   whl
         ' ( !L:(?unf.?folfull.?com)+?L
-          & (   !COMB:?A+(!unf.?ifol.?icap.?icom.?ifolfull)+?B
+          & (     !COMB
+                : ?A+(!unf.?ifol.?icap.?icom.?ifolfull)+?B
               & ( !ifolfull:
                 | out$(twice full !unf)&get'
                 )
               & ( !icom:!com
-                |   out$(different comments !unf !icom and !com)
+                |     out
+                    $ (different comments !unf !icom and !com)
                   & get'
                 )
-              & !A+(!unf.!ifol.!icap.!com.!folfull)+!B:?COMB
+              &   !A+(!unf.!ifol.!icap.!com.!folfull)+!B
+                : ?COMB
             |     ( !unf
                   .   @(!com:? SMALL ?)&!unf
                     | 
-                  .   @(!com:? CAPITAL ?)&!unf
+                  .     @(!com:? CAPITAL ?)
+                      & !unf
                     | 
                   . !com
                   . !folfull
@@ -512,7 +579,13 @@ struct tri Full["
               & ( !COMB:?+(!ifol.?)+?
                 | !LOW:?+(!ifol.?)+?
                 | !ifolfull:%@:~
-                |   (!ifol.!ifol.!icap.str$(!A !B).!ifolfull)+!LOW
+                |     ( !ifol
+                      . !ifol
+                      . !icap
+                      . str$(!A !B)
+                      . !ifolfull
+                      )
+                    + !LOW
                   : ?LOW
                 )
             | 
@@ -525,7 +598,12 @@ struct tri Full["
               & !ifolfull:#@
               & ( !COMB:?+(!ifolfull.?)+?
                 | !LOW:?+(!ifolfull.?)+?
-                |     (!ifolfull.!ifolfull.!icap.str$(!A !B).!ifolfull)
+                |     ( !ifolfull
+                      . !ifolfull
+                      . !icap
+                      . str$(!A !B)
+                      . !ifolfull
+                      )
                     + !LOW
                   : ?LOW
                 )
@@ -616,13 +694,18 @@ struct tri Full["
                           : ?l2u
                         )
                       & (   @(!"General Category":L ?k)
-                          &     (x2d$!"Code value".!"Code value".!"Character name")
+                          &     ( x2d$!"Code value"
+                                . !"Code value"
+                                . !"Character name"
+                                )
                                 !let
                             : ?let
                           & ( !K:? !k ?
-                            | !k !K:?K&:?!k
+                            |   !k !K:?K
+                              & :?!k
                             )
-                          & (!"Code value".!"Character name") !!k:?!k
+                          &   (!"Code value".!"Character name") !!k
+                            : ?!k
                           & out$!"Code value"
                         | 
                         )
@@ -642,18 +725,28 @@ struct tri Full["
       & :?Cletters
       & 0:?blocks
       & \n:?nl
+      & 0:?(its.lastindex)
       &   whl
         ' (   !let
             :   (?d:?D&-1+!D:?D.?)
                 ?
-                (   (!D&-1+!D:?D.?) ?
+                (     (!D&-1+!D:?D.?)
+                      ?
                   & `~
                 | ?let
                 )
           & 1+!D:?D
-          & (d2x$!D.!d+-1*!D) !letters:?letters
-          &   !nl "{0x" d2x$!D "," !d+-1*!D "}," !Cletters
+          &   (d2x$!D.!d+-1*!D) !letters
+            : ?letters
+          &     !nl
+                "{0x"
+                d2x$!D
+                ","
+                !d+-1*!D
+                "},"
+                !Cletters
             : ?Cletters
+          & 1+!(its.lastindex):?(its.lastindex)
           & (   !blocks:7
               & 0:?blocks
               & \n:?nl
@@ -670,8 +763,12 @@ Based on UnicodeData.txt ("
 
 Structures created with CaseFolding.bra
 */
-struct cletter {int L:21;int range:11;};
-struct cletter Cletters[]={"
+struct cletter {int L:21;int range:11;};"
+                \n
+                "unsigned int lastindex = "
+                !(its.lastindex)
+                ";\n"
+                "struct cletter Cletters[]={"
               )
           , "cletters.cpp"
           , NEW BIN
@@ -681,35 +778,41 @@ struct cletter Cletters[]={"
 ","cletters.cpp",APP BIN)
       &   put
         $ ( "
-bool isAlpha(int a)
+int isAlpha(int a)
     {
-    static int start_i = 0;
-    int i;
+    unsigned int pivot;
+    unsigned int lo;
+    unsigned int hi;
+    lo = 0;
+    pivot = 8;
+    hi = lastindex; /* Range starting at lastindex does not consists of letters, so pivot must always stay less than lastindex. */
+    assert(pivot < lastindex);
     if(a <= 0)
-        return false;
-    if((unsigned int)a < Cletters[start_i].L)
+        return 0;
+    while(1)
         {
-        for(i=0;;++i)
+        assert(pivot < hi);
+        if(a < Cletters[pivot].L)
             {
-            if((unsigned int)a < Cletters[i].L)
+            if(pivot == lo)
+                return 0;
+            else
                 {
-                start_i = --i;
-                return (unsigned int)a <= Cletters[i].L+Cletters[i].range;
+                hi = pivot;
+                pivot = (pivot + lo) / 2;
                 }
             }
-        }
-    else
-        {
-        for(i=start_i+1;;++i)
+        else if(a <= Cletters[pivot].L + Cletters[pivot].range)
+            return 1;
+        else if(pivot + 1 == hi)
+            return 0;
+        else
             {
-            if((unsigned int)a < Cletters[i].L)
-                {
-                start_i = --i;
-                return (unsigned int)a <= Cletters[i].L+Cletters[i].range;
-                }
+            lo = pivot + 1;
+            pivot = (hi + pivot) / 2;
             }
+
         }
-    return false;
     }
 "
           , "cletters.cpp"
@@ -773,7 +876,8 @@ struct ccaseconv "
                       ?
                       (     ( ?ndd
                             . ?
-                            . !df&!ndd:!pat:?dd
+                            .   !df
+                              & !ndd:!pat:?dd
                             . ?
                             )
                             ?
@@ -817,7 +921,10 @@ struct ccaseconv "
                       )
                 )
             &   put
-              $ (str$!conv,"letter.cpp"|!name,APP BIN)
+              $ ( str$!conv
+                , "letter.cpp"|!name
+                , APP BIN
+                )
             &   put
               $ ( "{0x1FFFFF,0,0,0}};
 "
@@ -830,7 +937,10 @@ struct ccaseconv "
       & lst$(l2us,l2us,NEW BIN)
       & comp$(!u2l.u2l):?u2ls
       & lst$(u2ls,u2ls,NEW BIN)
-      & whl'(!K:%?k ?K&lst$(!k,!k,NEW BIN))
+      &   whl
+        ' ( !K:%?k ?K
+          & lst$(!k,!k,NEW BIN)
+          )
       &   put
         $ (   str
             $ ( "
@@ -841,8 +951,12 @@ Based on UnicodeData.txt ("
 (Does not convert final sigma to non-final sigma)
 
 Structures created with CaseFolding.bra
-*/
-struct cletter Cletters[]={"
+*/"
+                \n
+                "unsigned int lastindex = "
+                !(its.lastindex)
+                ";\n"
+                "struct cletter Cletters[]={"
               )
           , "letter.cpp"
           , APP BIN
