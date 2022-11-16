@@ -768,7 +768,7 @@ Structures created with CaseFolding.bra
                 \n
                 "#include <assert.h>"
                 \n
-                "struct cletter {int L:21;int range:11;};"
+                "struct cletter {unsigned int L:21;unsigned int range:11;};"
                 \n
                 "unsigned int lastindex = "
                 !(its.lastindex)
