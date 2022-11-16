@@ -16,7 +16,7 @@ and also
     l2us
     u2l
     u2ls
-    cletters.cpp
+    cletters.c
     letters
     
 You need to install Bracmat to run this script:
@@ -762,20 +762,25 @@ Based on UnicodeData.txt ("
 (Does not convert final sigma to non-final sigma)
 
 Structures created with CaseFolding.bra
-*/
-struct cletter {int L:21;int range:11;};"
+*/"
+                \n
+                "#include \"cletters.h\""
+                \n
+                "#include <assert.h>"
+                \n
+                "struct cletter {int L:21;int range:11;};"
                 \n
                 "unsigned int lastindex = "
                 !(its.lastindex)
                 ";\n"
                 "struct cletter Cletters[]={"
               )
-          , "cletters.cpp"
+          , "cletters.c"
           , NEW BIN
           )
-      & put$(str$!Cletters,"cletters.cpp",APP BIN)
+      & put$(str$!Cletters,"cletters.c",APP BIN)
       & put$("{0x1FFFFF,0}};
-","cletters.cpp",APP BIN)
+","cletters.c",APP BIN)
       &   put
         $ ( "
 int isAlpha(int a)
@@ -815,7 +820,7 @@ int isAlpha(int a)
         }
     }
 "
-          , "cletters.cpp"
+          , "cletters.c"
           , APP BIN
           )
       & lst$(letters,letters,NEW BIN)
@@ -1023,7 +1028,7 @@ and also
     l2us
     u2l
     u2ls
-    cletters.cpp
+    cletters.c
     letters
     
 You need to install Bracmat to run this script:
