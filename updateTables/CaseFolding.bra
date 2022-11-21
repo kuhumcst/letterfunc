@@ -3,8 +3,8 @@
 Read CaseFolding-15.0.0.txt and convert to Full and Simple tables in C.
 
 Produces 
-    letter.h
-    letter.cpp
+    casefolding.h
+    casefolding.c
     
 and also
     CaseFolding.html,
@@ -41,7 +41,6 @@ X=
   (LowerMin=)
   (COMBN=)
   (COMBMin=)
-  (lastindex=)
   (FullMin=)
   (COMB=)
   (Small2Capital=)
@@ -246,7 +245,6 @@ X=
             )
           & !all:~0
           & 1+!min:?min
-          & put$(str$(\r !min))
           )
       & out$(min !min)
       & (!min.!rij)
@@ -299,8 +297,8 @@ You should have received a copy of the GNU General Public License
 along with LETTERFUNC; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
-#ifndef LETTER_H
-#define LETTER_H
+#ifndef CASEFOLDING_H
+#define CASEFOLDING_H
 
 #define ARRSIZE "
                 !(its.COMBMin)
@@ -324,18 +322,11 @@ Based on UnicodeData.txt ("
 
 Structures created with CaseFolding.bra
 */
-struct ccaseconv {unsigned int L:21;int range:11;unsigned int inc:2;int dif:20;};
-extern struct ccaseconv l2u[];
-extern struct ccaseconv u2l[];
-
-extern unsigned int lastindex;
-struct cletter {unsigned int L:21;unsigned int range:11;};
-extern struct cletter Cletters[];
 
 #endif
 "
               )
-          , "letter.h"
+          , "casefolding.h"
           , NEW BIN
           )
       &   put
@@ -365,12 +356,12 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // Based on "
                 !(X.CaseFoldingFileName)
                 "
-#include \"letter.h\"
+#include \"casefolding.h\"
 struct tri Full["
                 !NFulls
                 "]={\n"
               )
-          , "letter.cpp"
+          , "casefolding.c"
           , NEW BIN
           )
       & !fulls:?all
@@ -406,7 +397,7 @@ struct tri Full["
                     "*/"
                     \n
                   )
-              , "letter.cpp"
+              , "casefolding.c"
               , APP BIN
               )
           & !i+1:?i
@@ -421,7 +412,7 @@ struct tri Full["
       &   put
         $ ( str$(\n "struct quat Letter[ARRSIZE]={
 ")
-          , "letter.cpp"
+          , "casefolding.c"
           , APP BIN
           )
       & 0:?i
@@ -465,12 +456,12 @@ struct tri Full["
                         "*/"
                         \n
                       )
-                  , "letter.cpp"
+                  , "casefolding.c"
                   , APP BIN
                   )
             |   put
               $ ( str$("{0,0,0,0L}" !sep \n)
-                , "letter.cpp"
+                , "casefolding.c"
                 , APP BIN
                 )
             )
@@ -484,7 +475,7 @@ struct tri Full["
               )
                 put
               $ ( str$("{0,0,0,0L}" !sep \n)
-                , "letter.cpp"
+                , "casefolding.c"
                 , APP BIN
                 )
           )
@@ -615,362 +606,6 @@ struct tri Full["
       & lst$(COMB,COMB,NEW BIN)
       & !COMB
   )
-  ( do
-  =   
-    .   0:?p
-      &   "
-0       Code value		normative	    Code value. For characters in the range U+0000..U+FFFD the code value uses a 4-digit hexadecimal format; for characters in the range U+10000..U+FFFFD the code value uses a 5-digit hexadecimal format; and for characters in the range U+100000..U+10FFFD the code value uses a 6-digit hexadecimal format.
-1       Character name 	normative 	    These names match exactly the names published in Chapter 14 of the Unicode Standard, Version 3.0.
-2       General Category 	normative/informative   This is a useful breakdown into various character"
-          "types which can be used as a default categorization in implementations. See below for a brief explanation.
-3       Canonical Combining Classes     normative 	    The classes used for the Canonical Ordering Algorithm in the Unicode Standard. These classes are also printed in Chapter 4 of the Unicode Standard.
-4       Bidirectional Category          normative 	    See the list below for an explanation of the abbreviations used in this field. These are the categories required by the Bidirectional Behavior Algorithm in the Unicode Standard. These categories are summarized in Chapter 3 of the Unicode Standard.
-5       Character Decomposition Mapping normative 	    In the Unicode Standard, not all of the mappings are full (maximal) decompositions. Recursive application of look-up for decompositions will, in all cases, lead to a maximal decomposition. The decomposition mappings match exactly the decomposition mappings published with the character names in the Unicode Standard.
-6       Decimal digit value	normative 	    This is a numeric field. If the character has the decimal digit property, as specified in Chapter 4 of the Unicode Standard, the value of that digit is represented with an integer value in this field
-7       Digit value 	normative 	    This is a numeric field. If the character represents a digit, not necessarily a decimal digit, the value is here. This covers digits which do not form decimal radix forms, such as the compatibility superscript digits
-8       Numeric value 	normative 	    This is a numeric field. If the character has the numeric property, as specified in Chapter 4 of the Unicode Standard, the value of that character is represented with an integer or rational number in this field. This includes fractions as, e.g., 1/5 for U+2155 VULGAR FRACTION ONE FIFTH Also included are numerical values for compatibility characters such as circled numbers.
-9       Mirrored 		normative 	    If the character has been identified as a mirrored character in bidirectional text, this field has the value Y; otherwise N. The list of mirrored characters is also printed in Chapter 4 of the Unicode Standard.
-10      Unicode 1.0 Name 	informative 	    This is the old name as published in Unicode 1.0. This name is only provided when it is significantly different from the Unicode 3.0 name for the character.
-11      10646 comment field	informative 	    This is the ISO 10646 comment field. It appears in parentheses in the 10646 names list, or contains an asterisk to mark an Annex P note.
-12      Uppercase Mapping 	informative 	    Upper case equivalent mapping. If a character is part of an alphabet with case distinctions, and has an upper case equivalent, then the upper case equivalent is in this field. See the explanation below on case distinctions. These mappings are always one-to-one, not one-to-many or many-to-one. This field is informative.
-13      Lowercase Mapping 	informative 	    Similar to Uppercase mapping
-14      Titlecase Mapping 	informative 	    Similar to Uppercase mapping
-"
-      & :?K
-      & :?u2l
-      & :?l2u
-      & :?let
-      & @( !txt
-         : (   ?
-               ( [!p ?line \n [?p ?
-               & @( !line
-                  : (     ?"Code value"
-                          ";"
-                          ?"Character name"
-                          ";"
-                          ?"General Category"
-                          ";"
-                          ?"Canonical Combining Classes"
-                          ";"
-                          ?"Bidirectional Category"
-                          ";"
-                          ?"Character Decomposition Mapping"
-                          ";"
-                          ?"Decimal digit value"
-                          ";"
-                          ?"Digit value"
-                          ";"
-                          ?"Numeric value"
-                          ";"
-                          ?Mirrored
-                          ";"
-                          ?"Unicode 1.0 Name"
-                          ";"
-                          ?"10646 comment field"
-                          ";"
-                          ?"Uppercase Mapping"
-                          ";"
-                          ?"Lowercase Mapping"
-                          ";"
-                          ?"Titlecase Mapping"
-                      & ( !"Lowercase Mapping":
-                        |     ( x2d$!"Code value":?V
-                              . x2d$!"Lowercase Mapping":?W
-                              . !W+-1*!V
-                              . !"Code value"
-                              . !"Lowercase Mapping"
-                              )
-                              !u2l
-                          : ?u2l
-                        )
-                      & ( !"Uppercase Mapping":
-                        |     ( x2d$!"Code value":?V
-                              . x2d$!"Uppercase Mapping":?W
-                              . !W+-1*!V
-                              . !"Code value"
-                              . !"Uppercase Mapping"
-                              )
-                              !l2u
-                          : ?l2u
-                        )
-                      & (   @(!"General Category":L ?k)
-                          &     ( x2d$!"Code value"
-                                . !"Code value"
-                                . !"Character name"
-                                )
-                                !let
-                            : ?let
-                          & ( !K:? !k ?
-                            |   !k !K:?K
-                              & :?!k
-                            )
-                          &   (!"Code value".!"Character name") !!k
-                            : ?!k
-                          & out$!"Code value"
-                        | 
-                        )
-                    | ?
-                    )
-                  )
-               & ~
-               )
-           | ?txt
-           )
-         )
-      & (lst$(K,K,NEW BIN)|)
-      & (lst$(let,let,NEW BIN)|)
-      & (lst$(u2l,u2l,NEW BIN)|)
-      & (lst$(l2u,l2u,NEW BIN)|)
-      & :?letters
-      & :?Cletters
-      & 0:?blocks
-      & \n:?nl
-      & 0:?(its.lastindex)
-      &   whl
-        ' (   !let
-            :   (?d:?D&-1+!D:?D.?)
-                ?
-                (     (!D&-1+!D:?D.?)
-                      ?
-                  & `~
-                | ?let
-                )
-          & 1+!D:?D
-          &   (d2x$!D.!d+-1*!D) !letters
-            : ?letters
-          &     !nl
-                "{0x"
-                d2x$!D
-                ","
-                !d+-1*!D
-                "},"
-                !Cletters
-            : ?Cletters
-          & 1+!(its.lastindex):?(its.lastindex)
-          & (   !blocks:7
-              & 0:?blocks
-              & \n:?nl
-            | 1+!blocks:?blocks&:?nl
-            )
-          )
-      &   put
-        $ (   str
-            $ ( "/*
-Based on UnicodeData.txt ("
-                !(X.UnicodeDataDate)
-                ")
-(Does not convert final sigma to non-final sigma)
-
-Structures created with CaseFolding.bra
-*/"
-                \n
-                "#include \"cletters.h\""
-                \n
-                "#include <assert.h>"
-                \n
-                "struct cletter {unsigned int L:21;unsigned int range:11;};"
-                \n
-                "unsigned int lastindex = "
-                !(its.lastindex)
-                ";\n"
-                "struct cletter Cletters[]={"
-              )
-          , "cletters.c"
-          , NEW BIN
-          )
-      & put$(str$!Cletters,"cletters.c",APP BIN)
-      & put$("{0x1FFFFF,0}};
-","cletters.c",APP BIN)
-      &   put
-        $ ( "
-int isAlpha(int a)
-    {
-    unsigned int pivot;
-    unsigned int lo;
-    unsigned int hi;
-    lo = 0;
-    pivot = 8;
-    hi = lastindex; /* Range starting at lastindex does not consists of letters, so pivot must always stay less than lastindex. */
-    assert(pivot < lastindex);
-    if(a <= 0)
-        return 0;
-    while(1)
-        {
-        assert(pivot < hi);
-        if(a < Cletters[pivot].L)
-            {
-            if(pivot == lo)
-                return 0;
-            else
-                {
-                hi = pivot;
-                pivot = (pivot + lo) / 2;
-                }
-            }
-        else if(a <= Cletters[pivot].L + Cletters[pivot].range)
-            return 1;
-        else if(pivot + 1 == hi)
-            return 0;
-        else
-            {
-            lo = pivot + 1;
-            pivot = (hi + pivot) / 2;
-            }
-
-        }
-    }
-"
-          , "cletters.c"
-          , APP BIN
-          )
-      & lst$(letters,letters,NEW BIN)
-      & ( comp
-        =   
-          .   !arg:(?arg.?name)
-            &   put
-              $ (   str
-                  $ ( "
-
-/* Based on http://unicode.org/Public/UNIDATA/UnicodeData.txt "
-                      !(X.UnicodeDataDate)
-                      " */
-/* structures created with CaseFolding.bra */
-struct ccaseconv "
-                      !name
-                      "[]={\n"
-                    )
-                ,   ("letter.cpp",APP BIN)
-                  | (str$(!name ".cpp"):?name,NEW BIN)
-                )
-            & (pat1=!d1&-1+!d1:?d1)
-            & (pat2=!d2&-2+!d2:?d2)
-            & ( setpat
-              =     
-                  ' (   $pat1
-                      & 1:?dif
-                      & '$pat1:(=?pat)
-                    |   $pat2
-                      & 2:?dif
-                      & '$pat2:(=?pat)
-                    )
-                : (=?pat)
-              )
-            &   ( "LETTER DECIMAL"
-                . "CASE CONVERTED LETTER DECIMAL"
-                . DELTA
-                . "LETTER HEX"
-                . "CASE CONVERTED LETTER HEX"
-                . INCREMENT
-                . RANGE
-                . "LAST LETTER HEX"
-                . "LAST CASE CONVERTED LETTER HEX"
-                )
-              : ?LL
-            & :?conv
-            &   whl
-              ' ( !setpat
-                & :?dd
-                &   !arg
-                  :   (   ?d
-                        & -1+!d:?d1
-                        & -2+!d:?d2
-                      . ?
-                      . ?df
-                      . ?
-                      )
-                      ?
-                      (     ( ?ndd
-                            . ?
-                            .   !df
-                              & !ndd:!pat:?dd
-                            . ?
-                            )
-                            ?
-                        & `~
-                      |   ?arg
-                        &     (   !dd:
-                                & ( !d
-                                  . !df+!d
-                                  . !df
-                                  . d2x$!d:?let
-                                  . d2x$(!df+!d)
-                                  . 0:?inc
-                                  . 0:?range
-                                  . d2x$!d
-                                  . d2x$(!df+!d)
-                                  )
-                              | ( !dd
-                                . !df+!dd
-                                . !df
-                                . d2x$!dd:?let
-                                . d2x$(!df+!dd)
-                                . !dif:?inc
-                                . !d+-1*!dd:?range
-                                . d2x$!d
-                                . d2x$(!df+!d)
-                                )
-                              )
-                              !LL
-                          : ?LL
-                        &     "{0x"
-                              !let
-                              ","
-                              !range
-                              ","
-                              !inc
-                              ","
-                              !df
-                              "},\n"
-                              !conv
-                          : ?conv
-                      )
-                )
-            &   put
-              $ ( str$!conv
-                , "letter.cpp"|!name
-                , APP BIN
-                )
-            &   put
-              $ ( "{0x1FFFFF,0,0,0}};
-"
-                , "letter.cpp"|!name
-                , APP BIN
-                )
-            & !LL
-        )
-      & comp$(!l2u.l2u):?l2us
-      & lst$(l2us,l2us,NEW BIN)
-      & comp$(!u2l.u2l):?u2ls
-      & lst$(u2ls,u2ls,NEW BIN)
-      &   whl
-        ' ( !K:%?k ?K
-          & lst$(!k,!k,NEW BIN)
-          )
-      &   put
-        $ (   str
-            $ ( "
-/*
-Based on UnicodeData.txt ("
-                !(X.UnicodeDataDate)
-                ")
-(Does not convert final sigma to non-final sigma)
-
-Structures created with CaseFolding.bra
-*/"
-                \n
-                "unsigned int lastindex = "
-                !(its.lastindex)
-                ";\n"
-                "struct cletter Cletters[]={"
-              )
-          , "letter.cpp"
-          , APP BIN
-          )
-      & put$(str$!Cletters,"letter.cpp",APP BIN)
-      & put$("{0x1FFFFF,0}};
-","letter.cpp",APP BIN)
-      & 
-  )
   ( new
   =   
     .   ~
@@ -997,8 +632,6 @@ Structures created with CaseFolding.bra
         & (its.2html)$
         & out$2htmlDone
         & (its.writeC)$
-        & get$("UnicodeData.txt",STR):?txt
-        & (its.do)$
         & DONE
   );
 
@@ -1015,21 +648,13 @@ Read "
           " and convert to Full and Simple tables in C.
 
 Produces 
-    letter.h
-    letter.cpp
+    casefolding.h
+    casefolding.c
     
 and also
     CaseFolding.html,
     LOW
     COMB
-    K
-    let
-    l2u
-    l2us
-    u2l
-    u2ls
-    cletters.c
-    letters
     
 You need to install Bracmat to run this script:
 

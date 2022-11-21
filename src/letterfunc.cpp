@@ -91,6 +91,13 @@ bool isAlpha(int a)
     return false;// unreachable code
     }
 #else
+#if 1
+bool isAlpha(int ch)
+    {
+    const char* mrk = gencat(ch);
+    return (mrk[0] == 'L' || mrk[0] == 'M');
+    }
+#else
 bool isAlpha(int a)
     {
     unsigned int pivot;
@@ -128,7 +135,8 @@ bool isAlpha(int a)
         }
     }
 #endif
-
+#endif
+#if 0
 static int convertLetter(int a,struct ccaseconv * T)
     {
     int i;
@@ -157,14 +165,15 @@ static int convertLetter(int a,struct ccaseconv * T)
         }
     return a;
     }
-
+#endif
 bool isUpper(int kar)
     {
 #if 0
     int ind = kar % ARRSIZE;
     return ((int)Letter[ind].Unfolded == kar) && Letter[ind].Unfolded == Letter[ind].Capital;
 #else
-    return kar == convertLetter(kar,l2u);
+    return strcmp(gencat(kar), "Ll"); // Anything but lowercase letter is OK
+//    return kar == convertLetter(kar,l2u);
 #endif
     }
 
@@ -174,7 +183,8 @@ bool isLower(int kar)
     int ind = kar % ARRSIZE;
     return ((int)Letter[ind].Unfolded == kar) && Letter[ind].Unfolded == Letter[ind].Simple;// && Letter[ind].Capital != 0;
 #else
-    return kar == convertLetter(kar,u2l);
+    return strcmp(gencat(kar), "Lu"); // Anything but uppercase letter is OK
+//    return kar == convertLetter(kar,u2l);
 #endif
     }
 /*
@@ -193,7 +203,8 @@ unsigned int lowerEquivalent(int kar)
     {
     if(kar == 'I' && !Turcic)
         return 'i';
-    return convertLetter(kar,u2l);
+    return toLowerUnicode(kar);
+//    return convertLetter(kar,u2l);
 /*
     int ind = kar % ARRSIZE;
     return ((int)Letter[ind].Unfolded == kar) && (Letter[ind].Simple) ? Letter[ind].Simple : kar;
@@ -204,7 +215,8 @@ unsigned int upperEquivalent(int kar)
     {
     if(kar == 'i' && !Turcic)
         return 'I';
-    return convertLetter(kar,l2u);
+    return toUpperUnicode(kar);
+//    return convertLetter(kar,l2u);
 /*
     int ind = kar % ARRSIZE;
     return ((int)Letter[ind].Unfolded == kar) && (Letter[ind].Capital) ? Letter[ind].Capital : kar;
