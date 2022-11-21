@@ -432,15 +432,15 @@ C 	Other 	                Cc | Cf | Cs | Co | Cn
             \n
             "typedef enum {e2C,e2c,e2d,e2e,e2f,e2i,e2k,e2l,e2m,e2n,e2o,e2p,e2s,e2t,e2u,e2} mark2;"
             \n
-            "typedef struct tmark {char m1:4; char m2:4;} tmark;"
+            "typedef struct tmark {unsigned char m1:4; unsigned char m2:4;} tmark;"
             \n
             "typedef struct cletter {unsigned short int L;unsigned short int range;} cletter;"
             \n
             "typedef struct cletter2 {unsigned int L;unsigned int range;} cletter2;"
             \n\n
-            "static char * firstMark = \"LMNPSZC\";"
+            "static const char * firstMark = \"LMNPSZC\";"
             \n
-            "static char * secondMark = \"Ccdefiklmnopstu\";"
+            "static const char * secondMark = \"Ccdefiklmnopstu\";"
             \n\n
             "tmark Mark[] =     {"
             theMarks$!Groups0
@@ -526,7 +526,7 @@ const char * gencat(int a)
     unsigned int hi;
     unsigned int offset;
     cletter *Cletters;
-    char *def;
+    const char *def;
     static char returnVal[3] = { '0','0','0' };
     
     if(a <= 0)
@@ -555,7 +555,7 @@ const char * gencat(int a)
             !lastindex2
             ";++i)
             {
-            if(Cletters2[i].L <= a && a <= Cletters2[i].L + Cletters2[i].range)
+            if(Cletters2[i].L <= (unsigned short)a && (unsigned short)a <= Cletters2[i].L + Cletters2[i].range)
                 {
                 tmark mrk = Mark[i + "
             !lastindex0
@@ -590,7 +590,7 @@ const char * gencat(int a)
     while(1)
         {
         assert(pivot < hi);
-        if(a < Cletters[pivot].L)
+        if((unsigned short)a < Cletters[pivot].L)
             {
             if(pivot == lo)
                 return def;
@@ -600,7 +600,7 @@ const char * gencat(int a)
                 pivot = (pivot + lo) / 2;
                 }
             }
-        else if(a <= Cletters[pivot].L + Cletters[pivot].range)
+        else if((unsigned short)a <= Cletters[pivot].L + Cletters[pivot].range)
             {
             tmark mrk = Mark[pivot + offset];
             returnVal[0] = firstMark[mrk.m1];
@@ -624,9 +624,9 @@ const char * gencat(int a)
       & out$"unichartypes.c written"
       &   put
         $ (   str
-            $ ( "#ifndef UNICHARTYPE_H"
+            $ ( "#ifndef UNICHARTYPES_H"
                 \n
-                "#define UNICHARTYPE_H"
+                "#define UNICHARTYPES_H"
                 "\n/*\n"
                 "Uses the field 'General Category'. Values returned by gencat(int) are:"
                 \n\n
@@ -706,7 +706,15 @@ const char * gencat(int a)
                 \n
                 "C 	Other 	                Cc | Cf | Cs | Co | Cn"
                 "\n*/\n\n"
+                "#ifdef __cplusplus"
+                \n
                 "extern \"C\" const char * gencat(int a);"
+                \n
+                "#else"
+                \n
+                "extern const char* gencat(int a);"
+                \n
+                "#endif"
                 \n\n
                 "#endif"
                 \n
@@ -888,13 +896,17 @@ int toLowerUnicode(int a)
       & out$"unicaseconv.c written"
       &   put
         $ (   str
-            $ ( "#ifndef CASECONV_H"
+            $ ( "#ifndef UNICASECONV_H"
                 \n
-                "#define CASECONV_H"
+                "#define UNICASECONV_H"
                 \n
                 "/* Uses the fields Uppercase Mapping and Lowercase Mapping in Unicodedata.txt to convert lower case to upper case and vice versa */"
                 \n\n
                 "struct ccaseconv {unsigned int L:21;int range:11;unsigned int inc:2;int dif:20;};"
+                \n
+                "extern struct ccaseconv l2u[];"
+                \n
+                "extern struct ccaseconv u2l[];"
                 \n\n
                 "int convertLetter(int a, struct ccaseconv * T);"
                 \n

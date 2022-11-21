@@ -1,5 +1,5 @@
-#ifndef UNICHARTYPE_H
-#define UNICHARTYPE_H
+#ifndef UNICHARTYPES_H
+#define UNICHARTYPES_H
 /*
 Uses the field 'General Category'. Values returned by gencat(int) are:
 
@@ -43,6 +43,10 @@ Cn 	Unassigned 	            a reserved unassigned code point or a noncharacter
 C 	Other 	                Cc | Cf | Cs | Co | Cn
 */
 
+#ifdef __cplusplus
 extern "C" const char * gencat(int a);
+#else
+extern const char* gencat(int a);
+#endif
 
 #endif

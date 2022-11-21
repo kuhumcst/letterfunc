@@ -8,12 +8,12 @@ Structures created with UnicodeData.bra
 
 typedef enum {e1L,e1M,e1N,e1P,e1S,e1Z,e1C,e1} mark1;
 typedef enum {e2C,e2c,e2d,e2e,e2f,e2i,e2k,e2l,e2m,e2n,e2o,e2p,e2s,e2t,e2u,e2} mark2;
-typedef struct tmark {char m1:4; char m2:4;} tmark;
+typedef struct tmark {unsigned char m1:4; unsigned char m2:4;} tmark;
 typedef struct cletter {unsigned short int L;unsigned short int range;} cletter;
 typedef struct cletter2 {unsigned int L;unsigned int range;} cletter2;
 
-static char * firstMark = "LMNPSZC";
-static char * secondMark = "Ccdefiklmnopstu";
+static const char * firstMark = "LMNPSZC";
+static const char * secondMark = "Ccdefiklmnopstu";
 
 tmark Mark[] =     {{e1C,e2c},{e1Z,e2s},{e1P,e2o},{e1S,e2c},{e1P,e2o},{e1P,e2s},{e1P,e2e},{e1P,e2o},
 {e1S,e2m},{e1P,e2o},{e1P,e2d},{e1P,e2o},{e1N,e2d},{e1P,e2o},{e1S,e2m},{e1P,e2o},{e1L,e2u},{e1P,e2s},
@@ -473,7 +473,7 @@ const char * gencat(int a)
     unsigned int hi;
     unsigned int offset;
     cletter *Cletters;
-    char *def;
+    const char *def;
     static char returnVal[3] = { '0','0','0' };
     
     if(a <= 0)
@@ -494,7 +494,7 @@ const char * gencat(int a)
         int i;
         for(i = 0;i < 4;++i)
             {
-            if(Cletters2[i].L <= a && a <= Cletters2[i].L + Cletters2[i].range)
+            if(Cletters2[i].L <= (unsigned short)a && (unsigned short)a <= Cletters2[i].L + Cletters2[i].range)
                 {
                 tmark mrk = Mark[i + 1782 + 430];
                 returnVal[0] = firstMark[mrk.m1];
@@ -517,7 +517,7 @@ const char * gencat(int a)
     while(1)
         {
         assert(pivot < hi);
-        if(a < Cletters[pivot].L)
+        if((unsigned short)a < Cletters[pivot].L)
             {
             if(pivot == lo)
                 return def;
@@ -527,7 +527,7 @@ const char * gencat(int a)
                 pivot = (pivot + lo) / 2;
                 }
             }
-        else if(a <= Cletters[pivot].L + Cletters[pivot].range)
+        else if((unsigned short)a <= Cletters[pivot].L + Cletters[pivot].range)
             {
             tmark mrk = Mark[pivot + offset];
             returnVal[0] = firstMark[mrk.m1];
