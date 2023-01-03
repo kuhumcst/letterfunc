@@ -95,7 +95,7 @@ bool isAlpha(int a)
 bool isAlpha(int ch)
     {
     const char* mrk = gencat(ch);
-    return (mrk[0] == 'L' || mrk[0] == 'M');
+    return (mrk != 0 && (mrk[0] == 'L' || mrk[0] == 'M'));
     }
 #else
 bool isAlpha(int a)
@@ -172,7 +172,8 @@ bool isUpper(int kar)
     int ind = kar % ARRSIZE;
     return ((int)Letter[ind].Unfolded == kar) && Letter[ind].Unfolded == Letter[ind].Capital;
 #else
-    return strcmp(gencat(kar), "Ll"); // Anything but lowercase letter is OK
+    const char* cat = gencat(kar);
+    return cat != 0 && strcmp(cat, "Ll"); // Anything but lowercase letter is OK
 //    return kar == convertLetter(kar,l2u);
 #endif
     }
@@ -183,7 +184,8 @@ bool isLower(int kar)
     int ind = kar % ARRSIZE;
     return ((int)Letter[ind].Unfolded == kar) && Letter[ind].Unfolded == Letter[ind].Simple;// && Letter[ind].Capital != 0;
 #else
-    return strcmp(gencat(kar), "Lu"); // Anything but uppercase letter is OK
+    const char* cat = gencat(kar);
+    return cat != 0 && strcmp(cat, "Lu"); // Anything but uppercase letter is OK
 //    return kar == convertLetter(kar,u2l);
 #endif
     }
